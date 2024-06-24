@@ -1,0 +1,26 @@
+{
+  "name": "semantic-scholar",
+  "version": "1.0.0",
+  "description": "Semantic Scholar in Roam Research",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mlava/semantic-scholar.git"
+  },
+  "author": "Mark Lavercombe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mlava/semantic-scholar/issues"
+  },
+  "homepage": "https://github.com/mlava/semantic-scholar#readme",
+  "dependencies": {
+    "izitoast": "^1.4.0"
+  },
+  "devDependencies": {
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4"
+  }
+}
