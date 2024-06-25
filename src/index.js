@@ -51,26 +51,7 @@ export default {
                         type: "switch",
                         onChange: (evt) => { setNewPageTitle(evt); }
                     },
-                },/*
-                {
-                    id: "ss-pdfDownload",
-                    name: "Download PDF",
-                    description: "If an open access pdf is available, download and embed in graph",
-                    action: {
-                        type: "switch",
-                        onChange: (evt) => { setPdfDownload(evt); }
-                    },
                 },
-                {
-                    id: "ss-pdfDownloadOrder",
-                    name: "PDF",
-                    description: "Which position to place the pdf",
-                    action: {
-                        type: "select",
-                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Hide"],
-                        onChange: (evt) => { setPdfDownloadOrder(evt); }
-                    }
-                },*/
                 {
                     id: "ss-journalOrder",
                     name: "Journal reference",
@@ -151,6 +132,16 @@ export default {
                         onChange: (evt) => { setAbstractOrder(evt); }
                     }
                 },
+                {
+                    id: "ss-pdfOrder",
+                    name: "PDF",
+                    description: "Which position to place the pdf link (if open access)",
+                    action: {
+                        type: "select",
+                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Hide"],
+                        onChange: (evt) => { setPdfOrder(evt); }
+                    }
+                },
 
             ]
         };
@@ -172,7 +163,7 @@ export default {
         };
 
         // onload - articles
-        var newPage, newPageTitle, journalOrder, articleTypeOrder, authorsOrder, referencesOrder, citationsOrder, infCitationsOrder, sourcesOrder, abstractOrder;
+        var newPage, newPageTitle, journalOrder, articleTypeOrder, authorsOrder, referencesOrder, citationsOrder, infCitationsOrder, sourcesOrder, abstractOrder, pdfOrder;
 
         newPage = !extensionAPI.settings.get("ss-newPage");
         if (extensionAPI.settings.get("ss-newPageTitle") == true) {
@@ -220,6 +211,11 @@ export default {
         } else {
             abstractOrder = 8;
         }
+        if (extensionAPI.settings.get("ss-pdfOrder") != null) {
+            pdfOrder = extensionAPI.settings.get("ss-pdfOrder");
+        } else {
+            pdfOrder = 9;
+        }
 
         // onChange - articles
         async function setConfig(evt) {
@@ -264,6 +260,9 @@ export default {
         }
         async function setAbstractOrder(evt) {
             abstractOrder = evt;
+        }
+        async function setAbstractOrder(evt) {
+            pdfOrder = evt;
         }
 
         checkFirstRun();
@@ -428,9 +427,8 @@ export default {
 
                 await fetch(ssUrl)
                     .then(async (article) => {
-                        if (article.status == 404) {
-                            blocks.push({ "text": "Article not found" });
-                        } else if (article.ok) {
+                        console.info(article);
+                        if (article.status == 200) {
                             let data = await article.json();
                             console.info(data);
                             var title = data.title.toString();
@@ -511,11 +509,14 @@ export default {
                                 var references = data.references;
                                 var referencesBlock = [];
                                 for (var i = 0; i < references.length; i++) {
-                                    if (window.roamjs?.extension?.smartblocks) {
-                                        referencesBlock.push({ "text": "" + references[i].title + "  {{Import:SmartBlock:SemanticScholarArticle:corpus=" + references[i].corpusId + "}}" });
-                                    } else {
-                                        referencesBlock.push({ "text": "" + references[i].title + "" });
+                                    var refTitle = "" + references[i].title + "";
+                                    if (references[i].isOpenAccess) {
+                                        refTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png)";
                                     }
+                                    if (window.roamjs?.extension?.smartblocks) {
+                                        refTitle += "  {{Import:SmartBlock:SemanticScholarArticle:corpus=" + references[i].corpusId + "}}";
+                                    }
+                                    referencesBlock.push({ "text": refTitle });
                                 }
                                 children.splice(referencesOrder, 0, { "text": "**References:** (" + referenceCount + ")", "children": referencesBlock });
                             }
@@ -547,9 +548,6 @@ export default {
                                 if (data.externalIds.hasOwnProperty("ArXiv")) {
                                     externalLinks += "  ~  [ArXiv](https://arxiv.org/abs/" + data.externalIds.ArXiv + ")";
                                 }
-                                if (openAccessPdf != undefined) {
-                                    externalLinks += "  ~  ![](/OA.png)[🔗](" + openAccessPdf + ")";
-                                }
                                 children.splice(sourcesOrder, 0, { "text": externalLinks, });
                             }
                             if (abstractOrder != "Hide") {
@@ -566,15 +564,21 @@ export default {
                             }
                             */
 
+                            if (openAccessPdf != undefined) {
+                                var pdfString = "<img src=\"https://github.com/mlava/semantic-scholar/blob/main/oa.png\" >";
+                                children.splice(pdfOrder, 0, { "text": pdfString, });
+                            }
                             children.splice(99, 0, { "text": "**Corpus ID:** " + data.corpusId, });
 
                             // finally, create the blocks object and send for block creation
                             blocks.push({ "text": "**" + title + "**" + citekey + "**" + data.corpusId, "children": children });
+                        } else if (article.status == 404) {
+                            blocks.push({ "text": "Article not found" });
                         }
-                    })
+                    })/*
                     .catch(error => {
                         blocks.push({ "text": "Too many requests" });
-                    });
+                    })*/;
             }
 
             var page, newPageName, newPageName1, newPageUid, string, newCorpId;
