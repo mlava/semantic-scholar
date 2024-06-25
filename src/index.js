@@ -266,7 +266,53 @@ export default {
             abstractOrder = evt;
         }
 
-        // TODO: check first load and create a page with smartblocks if needed
+        checkFirstRun();
+
+        async function checkFirstRun() {
+            var page = await window.roamAlphaAPI.q(`[:find (pull ?page [:block/string :block/uid {:block/children ...}]) :where [?page :node/title "Semantic Scholar configuration"] ]`);
+            if (page.length < 1) { // no config page created, so create one
+                let newUid = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createPage({ page: { title: "Semantic Scholar configuration", uid: newUid } });
+                let string1 = "Thank you for installing the Semantic Scholar extension for Roam Research. This page has been automatically generated to allow for configuration.";
+                let newUid1 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid, order: 0 }, block: { string: string1, uid: newUid1 } });
+                let string2 = "This extension allows you to query and import article and author data from the literature base at Semantic Scholar.";
+                newUid1 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid, order: 1 }, block: { string: string2, uid: newUid1 } });
+                let string3 = "It can be used without an API key, although rate limiting applies and you will often see a toast message asking you to wait before trying again. Alternatively, you can apply fhttps://www.semanticscholar.org/product/api#api-key-formor an API key at [Semantic Scholar](https://www.semanticscholar.org/product/api#api-key-form).";
+                newUid1 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid, order: 2 }, block: { string: string3, uid: newUid1 } });
+                let string3a = "You can configure your preferences in the Roam Depot Settings for this extension. You can determine what data you are interested in seeing for both articles and authors, and the order in which it displays. If you choose Hide for any of the data types, that data will not be requested in the API call to Semantic Scholar. This will save on data transmitted.";
+                newUid1 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid, order: 3 }, block: { string: string3a, uid: newUid1 } });
+                let string4 = "If you also have the SmartBlocks extension installed, you will see an Import button after every author, reference and citation in the article view. Clicking the button will import that data as a separate page. If you don't have SmartBlocks installed you will need to install it to have access to this feature.";
+                newUid1 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid, order: 4 }, block: { string: string4, uid: newUid1 } });
+                let string5 = "The fields below the horizontal line are the SmartBlock code required to make the bottons work. Please DO NOT change these SmartBlocks as you might break the Import buttons.";
+                newUid1 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid, order: 5 }, block: { string: string5, uid: newUid1 } });
+                let string6 = "If you have any issues, please request support in the Roam Research [Slack](https://app.slack.com/client/TNEAEL9QW) or the [GitHub](https://github.com/mlava/semantic-scholar/issues) page for this extension.";
+                newUid1 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid, order: 6 }, block: { string: string6, uid: newUid1 } });
+                newUid1 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid, order: 7 }, block: { string: "---", uid: newUid1 } });
+                let ws_1 = "#SmartBlock SemanticScholarArticle";
+                newUid1 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid, order: 9 }, block: { string: ws_1, uid: newUid1 } });
+                let ws_2 = "<%IMPORTARTICLESEMSCHOL%>";
+                let newUid2 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid1, order: 0 }, block: { string: ws_2.toString(), uid: newUid2 } });
+                let ws_3 = "#SmartBlock SemanticScholarAuthor";
+                newUid1 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid, order: 10 }, block: { string: ws_3, uid: newUid1 } });
+                let ws_4 = "<%IMPORTAUTHORSEMSCHOL%>";
+                let newUid3 = roamAlphaAPI.util.generateUID();
+                await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newUid1, order: 0 }, block: { string: ws_4.toString(), uid: newUid3 } });
+
+                await sleep(50);
+                await window.roamAlphaAPI.ui.mainWindow.openPage({ page: { uid: newUid } });
+            }
+        }
 
         extensionAPI.ui.commandPalette.addCommand({
             label: "Semantic Scholar - Article Metadata",
@@ -395,13 +441,11 @@ export default {
                             }
                             var url = data.url.toString();
                             var isOpenAccess = data.isOpenAccess;
-                            var openAccessImage = "";
-                            // TODO: handle openAccess status
-                            if (isOpenAccess) {
-                                openAccessImage += "![](https://github.com/mlava/semantic-scholar/blob/main/oa.png)";
+                            var openAccessPdf;
+                            if (data.hasOwnProperty("openAccessPdf") && data.openAccessPdf.hasOwnProperty("url")) {
+                                openAccessPdf = data.openAccessPdf.url;
                             }
 
-                            // TODO: handle openPdf status
                             var children = [];
                             if (journalOrder != "Hide") {
                                 var journalName = data.journal.name.toString();
@@ -455,7 +499,7 @@ export default {
                                 for (var i = 0; i < authors.length; i++) {
                                     if (window.roamjs?.extension?.smartblocks) {
                                         authorsBlock.push({ "text": "[[" + authors[i].name + "]]", }); // TODO: update with button once author import function is working
-                                        // e.g. {{Import:SmartBlock:SemanticScholar:authorId=" + authors[i].authorId + "}}
+                                        // e.g. {{Import:SmartBlock:SemanticScholarAuthor:authorId=" + authors[i].authorId + "}}
                                     } else {
                                         authorsBlock.push({ "text": "[[" + authors[i].name + "]]", });
                                     }
@@ -468,7 +512,7 @@ export default {
                                 var referencesBlock = [];
                                 for (var i = 0; i < references.length; i++) {
                                     if (window.roamjs?.extension?.smartblocks) {
-                                        referencesBlock.push({ "text": "" + references[i].title + "  {{Import:SmartBlock:SemanticScholar:corpus=" + references[i].corpusId + "}}" });
+                                        referencesBlock.push({ "text": "" + references[i].title + "  {{Import:SmartBlock:SemanticScholarArticle:corpus=" + references[i].corpusId + "}}" });
                                     } else {
                                         referencesBlock.push({ "text": "" + references[i].title + "" });
                                     }
@@ -481,7 +525,7 @@ export default {
                                 var citationsBlock = [];
                                 for (var i = 0; i < citations.length; i++) {
                                     if (window.roamjs?.extension?.smartblocks) {
-                                        citationsBlock.push({ "text": "" + citations[i].title + "  {{Import:SmartBlock:SemanticScholar:corpus=" + citations[i].corpusId + "}}" });
+                                        citationsBlock.push({ "text": "" + citations[i].title + "  {{Import:SmartBlock:SemanticScholarArticle:corpus=" + citations[i].corpusId + "}}" });
                                     } else {
                                         citationsBlock.push({ "text": "" + citations[i].title + "" });
                                     }
@@ -503,6 +547,9 @@ export default {
                                 if (data.externalIds.hasOwnProperty("ArXiv")) {
                                     externalLinks += "  ~  [ArXiv](https://arxiv.org/abs/" + data.externalIds.ArXiv + ")";
                                 }
+                                if (openAccessPdf != undefined) {
+                                    externalLinks += "  ~  ![](/OA.png)[🔗](" + openAccessPdf + ")";
+                                }
                                 children.splice(sourcesOrder, 0, { "text": externalLinks, });
                             }
                             if (abstractOrder != "Hide") {
@@ -513,6 +560,12 @@ export default {
                                     }
                                 }
                             }
+                            /*
+                            if (isOpenAccess) {
+                                children.splice(10, 0, { "text": openAccessImage });
+                            }
+                            */
+
                             children.splice(99, 0, { "text": "**Corpus ID:** " + data.corpusId, });
 
                             // finally, create the blocks object and send for block creation
@@ -537,7 +590,7 @@ export default {
             } else if (newPageName == "Too many requests") {
                 if (sb) {
                     var originalBlockString = await window.roamAlphaAPI.data.pull("[:block/string]", [":block/uid", parentUid])[":block/string"];
-                    var newString = originalBlockString + "{{Import:SmartBlock:SemanticScholar:corpus=" + corpus + "}}";
+                    var newString = originalBlockString + "{{Import:SmartBlock:SemanticScholarArticle:corpus=" + corpus + "}}";
                     await window.roamAlphaAPI.updateBlock(
                         { block: { uid: parentUid, string: newString.toString(), open: true } });
                 }
