@@ -2,15 +2,15 @@
     display: none;
 }
 
-.rm-inline-img__resize:has(+[data-tag*="semSchol"]) {
+[data-page-links*="semSchol"] > .rm-block-main > .rm-block__input > span > .rm-inline-img__resize {
     display: inline;
 }
 
-.rm-inline-img__resize:has(+[data-tag*="semSchol"]) > .react-resizable {
+[data-page-links*="semSchol"] > .rm-block-main > .rm-block__input > span > .rm-inline-img__resize > .react-resizable {
     display: inline;
 }
 
-.rm-inline-img__resize:has(+[data-tag*="semSchol"]) > .react-resizable > .react-resizable-handle {
+[data-page-links*="semSchol"] > .rm-block-main > .rm-block__input > span > .rm-inline-img__resize > .react-resizable > .react-resizable-handle {
     display: none;
 }
 
