@@ -440,7 +440,7 @@ export default {
                             var url = data.url.toString();
                             var isOpenAccess = data.isOpenAccess;
                             var openAccessPdf;
-                            if (data.hasOwnProperty("openAccessPdf") && data.openAccessPdf.hasOwnProperty("url")) {
+                            if (data.hasOwnProperty("openAccessPdf") && data.openAccessPdf != null && data.openAccessPdf.hasOwnProperty("url")) {
                                 openAccessPdf = data.openAccessPdf.url;
                             }
 
@@ -474,6 +474,9 @@ export default {
                                 }
                                 if (pages != undefined) {
                                     journalString += ":" + pages + "";
+                                }
+                                if (isOpenAccess) {
+                                    journalString += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png) #semSchol";
                                 }
                                 children.splice(journalOrder, 0, { "text": journalString, });
                             }
@@ -511,7 +514,7 @@ export default {
                                 for (var i = 0; i < references.length; i++) {
                                     var refTitle = "" + references[i].title + "";
                                     if (references[i].isOpenAccess) {
-                                        refTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png)";
+                                        refTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png) #semSchol";
                                     }
                                     if (window.roamjs?.extension?.smartblocks) {
                                         refTitle += "  {{Import:SmartBlock:SemanticScholarArticle:corpus=" + references[i].corpusId + "}}";
@@ -558,11 +561,6 @@ export default {
                                     }
                                 }
                             }
-                            /*
-                            if (isOpenAccess) {
-                                children.splice(10, 0, { "text": openAccessImage });
-                            }
-                            */
 
                             if (openAccessPdf != undefined) {
                                 var pdfString = "<img src=\"https://github.com/mlava/semantic-scholar/blob/main/oa.png\" >";
@@ -575,10 +573,10 @@ export default {
                         } else if (article.status == 404) {
                             blocks.push({ "text": "Article not found" });
                         }
-                    })/*
+                    })
                     .catch(error => {
                         blocks.push({ "text": "Too many requests" });
-                    })*/;
+                    });
             }
 
             var page, newPageName, newPageName1, newPageUid, string, newCorpId;

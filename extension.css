@@ -1,3 +1,19 @@
+[data-tag="semSchol"] {
+    display: none;
+}
+
+.rm-inline-img__resize:has(+[data-tag*="semSchol"]) {
+    display: inline;
+}
+
+.rm-inline-img__resize:has(+[data-tag*="semSchol"]) > .react-resizable {
+    display: inline;
+}
+
+.rm-inline-img__resize:has(+[data-tag*="semSchol"]) > .react-resizable > .react-resizable-handle {
+    display: none;
+}
+
 .semantic-scholar {
     max-width: 70%;
 }
