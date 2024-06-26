@@ -132,17 +132,6 @@ export default {
                         onChange: (evt) => { setAbstractOrder(evt); }
                     }
                 },
-                {
-                    id: "ss-pdfOrder",
-                    name: "PDF",
-                    description: "Which position to place the pdf link (if open access)",
-                    action: {
-                        type: "select",
-                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Hide"],
-                        onChange: (evt) => { setPdfOrder(evt); }
-                    }
-                },
-
             ]
         };
 
@@ -163,7 +152,7 @@ export default {
         };
 
         // onload - articles
-        var newPage, newPageTitle, journalOrder, articleTypeOrder, authorsOrder, referencesOrder, citationsOrder, infCitationsOrder, sourcesOrder, abstractOrder, pdfOrder;
+        var newPage, newPageTitle, journalOrder, articleTypeOrder, authorsOrder, referencesOrder, citationsOrder, infCitationsOrder, sourcesOrder, abstractOrder;
 
         newPage = !extensionAPI.settings.get("ss-newPage");
         if (extensionAPI.settings.get("ss-newPageTitle") == true) {
@@ -211,11 +200,6 @@ export default {
         } else {
             abstractOrder = 8;
         }
-        if (extensionAPI.settings.get("ss-pdfOrder") != null) {
-            pdfOrder = extensionAPI.settings.get("ss-pdfOrder");
-        } else {
-            pdfOrder = 9;
-        }
 
         // onChange - articles
         async function setConfig(evt) {
@@ -260,9 +244,6 @@ export default {
         }
         async function setAbstractOrder(evt) {
             abstractOrder = evt;
-        }
-        async function setAbstractOrder(evt) {
-            pdfOrder = evt;
         }
 
         checkFirstRun();
@@ -478,6 +459,9 @@ export default {
                                 if (isOpenAccess) {
                                     journalString += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png) #semSchol";
                                 }
+                                if (openAccessPdf != undefined) {
+                                    journalString += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/PDFa.png)";
+                                }
                                 children.splice(journalOrder, 0, { "text": journalString, });
                             }
                             if (articleTypeOrder != "Hide") {
@@ -562,10 +546,6 @@ export default {
                                 }
                             }
 
-                            if (openAccessPdf != undefined) {
-                                var pdfString = "<img src=\"https://github.com/mlava/semantic-scholar/blob/main/oa.png\" >";
-                                children.splice(pdfOrder, 0, { "text": pdfString, });
-                            }
                             children.splice(99, 0, { "text": "**Corpus ID:** " + data.corpusId, });
 
                             // finally, create the blocks object and send for block creation
