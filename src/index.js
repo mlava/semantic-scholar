@@ -457,10 +457,14 @@ export default {
                                     journalString += ":" + pages + "";
                                 }
                                 if (isOpenAccess) {
-                                    journalString += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png) #semSchol";
-                                }
-                                if (openAccessPdf != undefined) {
-                                    journalString += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/PDFa.png)";
+                                    if (data.externalIds.hasOwnProperty("DOI")) {
+                                        journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png)[🔗](https://doi.org/" + data.externalIds.DOI + ") #semSchol";
+                                    } else {
+                                        journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png)[🔗](" + url + ") #semSchol";
+                                    }
+                                    if (openAccessPdf != undefined) {
+                                        journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/PDFa.png)[🔗](" + openAccessPdf + ")";
+                                    }
                                 }
                                 children.splice(journalOrder, 0, { "text": journalString, });
                             }
@@ -512,11 +516,14 @@ export default {
                                 var citations = data.citations;
                                 var citationsBlock = [];
                                 for (var i = 0; i < citations.length; i++) {
-                                    if (window.roamjs?.extension?.smartblocks) {
-                                        citationsBlock.push({ "text": "" + citations[i].title + "  {{Import:SmartBlock:SemanticScholarArticle:corpus=" + citations[i].corpusId + "}}" });
-                                    } else {
-                                        citationsBlock.push({ "text": "" + citations[i].title + "" });
+                                    var citTitle = "" + citations[i].title + "";
+                                    if (citations[i].isOpenAccess) {
+                                        citTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png) #semSchol";
                                     }
+                                    if (window.roamjs?.extension?.smartblocks) {
+                                        citTitle += "  {{Import:SmartBlock:SemanticScholarArticle:corpus=" + citations[i].corpusId + "}}";
+                                    }
+                                    citationsBlock.push({ "text": citTitle });
                                 }
                                 children.splice(citationsOrder, 0, { "text": "**Citations:** (" + citationCount + ")", "children": citationsBlock });
                             }
