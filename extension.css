@@ -1,3 +1,4 @@
+/* having applied the SemSchol tag this css hides the tag itself and changes the react image css from default RR behaviour */
 [data-tag="semSchol"] {
     display: none;
 }
@@ -14,6 +15,8 @@
     display: none;
 }
 
+
+/* izitoast css */
 .semantic-scholar {
     max-width: 70%;
 }

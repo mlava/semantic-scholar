@@ -58,7 +58,7 @@ export default {
                     description: "Which position to place the journal reference data",
                     action: {
                         type: "select",
-                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Hide"],
+                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "Hide"],
                         onChange: (evt) => { setJournalOrder(evt); }
                     }
                 },
@@ -68,7 +68,7 @@ export default {
                     description: "Which position to place the article type",
                     action: {
                         type: "select",
-                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Hide"],
+                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "Hide"],
                         onChange: (evt) => { setArtTypeOrder(evt); }
                     }
                 },
@@ -78,7 +78,7 @@ export default {
                     description: "Which position to place the Authors",
                     action: {
                         type: "select",
-                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Hide"],
+                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "Hide"],
                         onChange: (evt) => { setAuthOrder(evt); }
                     }
                 },
@@ -88,7 +88,7 @@ export default {
                     description: "Which position to place the article's references",
                     action: {
                         type: "select",
-                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Hide"],
+                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "Hide"],
                         onChange: (evt) => { setRefsOrder(evt); }
                     }
                 },
@@ -98,7 +98,7 @@ export default {
                     description: "Which position to place the citations",
                     action: {
                         type: "select",
-                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Hide"],
+                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "Hide"],
                         onChange: (evt) => { setCitOrder(evt); }
                     }
                 },
@@ -108,7 +108,7 @@ export default {
                     description: "Which position to place the influential citations",
                     action: {
                         type: "select",
-                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Hide"],
+                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "Hide"],
                         onChange: (evt) => { setInfCitOrder(evt); }
                     }
                 },
@@ -118,7 +118,7 @@ export default {
                     description: "Which position to place the source links",
                     action: {
                         type: "select",
-                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Hide"],
+                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "Hide"],
                         onChange: (evt) => { setSourcesOrder(evt); }
                     }
                 },
@@ -128,7 +128,7 @@ export default {
                     description: "Which position to place the abstract",
                     action: {
                         type: "select",
-                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Hide"],
+                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "Hide"],
                         onChange: (evt) => { setAbstractOrder(evt); }
                     }
                 },
@@ -146,6 +146,66 @@ export default {
                         type: "select",
                         items: ["Author", "Article", "Home"],
                         onChange: (evt) => { setConfig(evt); }
+                    }
+                },
+                {
+                    id: "ss-affiliationsOrder",
+                    name: "Affiliations",
+                    description: "Which position to place the affiliations data",
+                    action: {
+                        type: "select",
+                        items: ["1", "2", "3", "4", "5", "6", "Hide"],
+                        onChange: (evt) => { setAffiliationsOrder(evt); }
+                    }
+                },
+                {
+                    id: "ss-authorsLinksOrder",
+                    name: "Author's links",
+                    description: "Which position to place the author's links",
+                    action: {
+                        type: "select",
+                        items: ["1", "2", "3", "4", "5", "6", "Hide"],
+                        onChange: (evt) => { setAuthorsLinksOrder(evt); }
+                    }
+                },
+                {
+                    id: "ss-homepageOrder",
+                    name: "Homepage",
+                    description: "Which position to place the author's homepage (if available)",
+                    action: {
+                        type: "select",
+                        items: ["1", "2", "3", "4", "5", "6", "Hide"],
+                        onChange: (evt) => { setHomepageOrder(evt); }
+                    }
+                },
+                {
+                    id: "ss-citationCountOrder",
+                    name: "Citation Count",
+                    description: "Which position to place the author's citation count",
+                    action: {
+                        type: "select",
+                        items: ["1", "2", "3", "4", "5", "6", "Hide"],
+                        onChange: (evt) => { setCitCountOrder(evt); }
+                    }
+                },
+                {
+                    id: "ss-hIndexOrder",
+                    name: "h-Index",
+                    description: "Which position to place the author's h-Index",
+                    action: {
+                        type: "select",
+                        items: ["1", "2", "3", "4", "5", "6", "Hide"],
+                        onChange: (evt) => { sethIndexOrder(evt); }
+                    }
+                },
+                {
+                    id: "ss-papersOrder",
+                    name: "Papers",
+                    description: "Which position to place the author's papers",
+                    action: {
+                        type: "select",
+                        items: ["1", "2", "3", "4", "5", "6", "Hide"],
+                        onChange: (evt) => { setPapersOrder(evt); }
                     }
                 },
             ]
@@ -201,6 +261,40 @@ export default {
             abstractOrder = 8;
         }
 
+        // onload - authors
+        var affiliationsOrder, authorsLinksOrder, homepageOrder, papersOrder, citationCountOrder, hIndexOrder;
+
+        if (extensionAPI.settings.get("ss-affiliationsOrder") != null) {
+            affiliationsOrder = extensionAPI.settings.get("ss-affiliationsOrder");
+        } else {
+            affiliationsOrder = 1;
+        }
+        if (extensionAPI.settings.get("ss-authorsLinksOrder") != null) {
+            authorsLinksOrder = extensionAPI.settings.get("ss-authorsLinksOrder");
+        } else {
+            authorsLinksOrder = 2;
+        }
+        if (extensionAPI.settings.get("ss-homepageOrder") != null) {
+            homepageOrder = extensionAPI.settings.get("ss-homepageOrder");
+        } else {
+            homepageOrder = 3;
+        }
+        if (extensionAPI.settings.get("ss-citationCountOrder") != null) {
+            citationCountOrder = extensionAPI.settings.get("ss-citationCountOrder");
+        } else {
+            citationCountOrder = 4;
+        }
+        if (extensionAPI.settings.get("ss-hIndexOrder") != null) {
+            hIndexOrder = extensionAPI.settings.get("ss-hIndexOrder");
+        } else {
+            hIndexOrder = 5;
+        }
+        if (extensionAPI.settings.get("ss-papersOrder") != null) {
+            papersOrder = extensionAPI.settings.get("ss-papersOrder");
+        } else {
+            papersOrder = 6;
+        }
+
         // onChange - articles
         async function setConfig(evt) {
             if (evt == "Article") {
@@ -244,6 +338,26 @@ export default {
         }
         async function setAbstractOrder(evt) {
             abstractOrder = evt;
+        }
+
+        // onChange - authors
+        async function setAffiliationsOrder(evt) {
+            affiliationsOrder = evt;
+        }
+        async function setAuthorsLinksOrder(evt) {
+            authorsLinksOrder = evt;
+        }
+        async function setHomepageOrder(evt) {
+            homepageOrder = evt;
+        }
+        async function setCitCountOrder(evt) {
+            citationCountOrder = evt;
+        }
+        async function sethIndexOrder(evt) {
+            hIndexOrder = evt;
+        }
+        async function setPapersOrder(evt) {
+            papersOrder = evt;
         }
 
         checkFirstRun();
@@ -310,11 +424,10 @@ export default {
             },
         });
 
-        /*
         extensionAPI.ui.commandPalette.addCommand({
             label: "Semantic Scholar - Author Metadata",
             callback: () => {
-                const parentUid = window.roamAlphaAPI.ui.getFocusedBlock()?.["block-uid"];
+                var parentUid = window.roamAlphaAPI.ui.getFocusedBlock()?.["block-uid"];
                 if (parentUid == undefined) {
                     alert("Please make sure to focus a block before importing from Semantic Scholar");
                     return;
@@ -322,21 +435,10 @@ export default {
                     window.roamAlphaAPI.updateBlock(
                         { block: { uid: parentUid, string: "Loading...".toString(), open: true } });
                 }
-                fetchSSAutM().then(async (blocks) => {
-                    window.roamAlphaAPI.updateBlock(
-                        { block: { uid: parentUid, string: blocks[0].text.toString(), open: true } });
-
-                    await sleep(50); // brief pause
-                    blocks = blocks[0].children;
-                    blocks.forEach((node, order) => createBlock({
-                        parentUid,
-                        order,
-                        node
-                    }));
-                });
+                fetchSSAutM(false, null, parentUid);
+                document.querySelector("body")?.click();
             },
         });
-        */
 
         const args = {
             text: "IMPORTARTICLESEMSCHOL",
@@ -348,14 +450,26 @@ export default {
             },
         };
 
+        const args1 = {
+            text: "IMPORTAUTHORSEMSCHOL",
+            help: "Import article from Semantic Scholar",
+            handler: (context) => () => {
+                var author = context.variables.authorId;
+                var parentUid = context.triggerUid;
+                return fetchSSAutM(true, author, parentUid);
+            },
+        };
+
         if (window.roamjs?.extension?.smartblocks) {
             window.roamjs.extension.smartblocks.registerCommand(args);
+            window.roamjs.extension.smartblocks.registerCommand(args1);
         } else {
             document.body.addEventListener(
                 `roamjs:smartblocks:loaded`,
                 () =>
                     window.roamjs?.extension.smartblocks &&
-                    window.roamjs.extension.smartblocks.registerCommand(args)
+                    window.roamjs.extension.smartblocks.registerCommand(args) &&
+                    window.roamjs.extension.smartblocks.registerCommand(args1)
             );
         }
 
@@ -458,12 +572,12 @@ export default {
                                 }
                                 if (isOpenAccess) {
                                     if (data.externalIds.hasOwnProperty("DOI")) {
-                                        journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png)[🔗](https://doi.org/" + data.externalIds.DOI + ") #semSchol";
+                                        journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png)[🔗](https://doi.org/" + data.externalIds.DOI + ") #semSchol";
                                     } else {
-                                        journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png)[🔗](" + url + ") #semSchol";
+                                        journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png)[🔗](" + url + ") #semSchol";
                                     }
                                     if (openAccessPdf != undefined) {
-                                        journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/PDFa.png)[🔗](" + openAccessPdf + ")";
+                                        journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/pdf.png)[🔗](" + openAccessPdf + ")";
                                     }
                                 }
                                 children.splice(journalOrder, 0, { "text": journalString, });
@@ -486,12 +600,22 @@ export default {
                                 var authors = data.authors;
                                 var authorsBlock = [];
                                 for (var i = 0; i < authors.length; i++) {
-                                    if (window.roamjs?.extension?.smartblocks) {
-                                        authorsBlock.push({ "text": "[[" + authors[i].name + "]]", }); // TODO: update with button once author import function is working
-                                        // e.g. {{Import:SmartBlock:SemanticScholarAuthor:authorId=" + authors[i].authorId + "}}
+                                    var authorString = "";
+                                    var matchingAuthorPages = await window.roamAlphaAPI.q(`
+                                        [:find ?e
+                                            :where [?e :block/string "**Author ID:** ${authors[i].authorId}"]]`);
+                                            console.info(matchingAuthorPages);
+                                    if (matchingAuthorPages != null && matchingAuthorPages.length > 0) {
+                                        // there's a matching author page
+                                        authorString = "[[" + authors[i].name + "]]";
                                     } else {
-                                        authorsBlock.push({ "text": "[[" + authors[i].name + "]]", });
+                                        if (window.roamjs?.extension?.smartblocks) {
+                                            authorString = "" + authors[i].name + "  {{Import:SmartBlock:SemanticScholarAuthor:authorId=" + authors[i].authorId + "}}";
+                                        } else {
+                                            authorsBlock.push({ "text": "" + authors[i].name + "" });
+                                        }
                                     }
+                                    authorsBlock.push({ "text": authorString, });
                                 }
                                 children.splice(authorsOrder, 0, { "text": "**Authors:** (" + authors.length + ")", "children": authorsBlock });
                             }
@@ -500,9 +624,10 @@ export default {
                                 var references = data.references;
                                 var referencesBlock = [];
                                 for (var i = 0; i < references.length; i++) {
+                                    // TODO: need to search for existing articles in graph and handle if exists
                                     var refTitle = "" + references[i].title + "";
                                     if (references[i].isOpenAccess) {
-                                        refTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png) #semSchol";
+                                        refTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png) #semSchol";
                                     }
                                     if (window.roamjs?.extension?.smartblocks) {
                                         refTitle += "  {{Import:SmartBlock:SemanticScholarArticle:corpus=" + references[i].corpusId + "}}";
@@ -516,9 +641,10 @@ export default {
                                 var citations = data.citations;
                                 var citationsBlock = [];
                                 for (var i = 0; i < citations.length; i++) {
+                                    // TODO: need to search for existing articles in graph and handle if exists
                                     var citTitle = "" + citations[i].title + "";
                                     if (citations[i].isOpenAccess) {
-                                        citTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/oa.png) #semSchol";
+                                        citTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png) #semSchol";
                                     }
                                     if (window.roamjs?.extension?.smartblocks) {
                                         citTitle += "  {{Import:SmartBlock:SemanticScholarArticle:corpus=" + citations[i].corpusId + "}}";
@@ -560,10 +686,11 @@ export default {
                         } else if (article.status == 404) {
                             blocks.push({ "text": "Article not found" });
                         }
-                    })
+                    })/*
                     .catch(error => {
                         blocks.push({ "text": "Too many requests" });
                     });
+                    */
             }
 
             var page, newPageName, newPageName1, newPageUid, string, newCorpId;
@@ -612,7 +739,6 @@ export default {
                     newPageUid = roamAlphaAPI.util.generateUID();
                     if (page.length < 1) { // create new page
                         await window.roamAlphaAPI.createPage({ page: { title: newPageName, uid: newPageUid } });
-
                         await window.roamAlphaAPI.updateBlock(
                             { block: { uid: parentUid, string: "[[" + newPageName + "]]".toString(), open: true } });
                         parentUid = roamAlphaAPI.util.generateUID();
@@ -698,24 +824,251 @@ export default {
             }
         }
 
-        /*
-        async function fetchSSAutM() {
-            let author = await fetch("https://api.semanticscholar.org/graph/v1/author/2262347?&fields=affiliations,authorId,citationCount,externalIds,hIndex,homepage,name,paperCount,papers,papers.abstract,papers.authors,papers.citationCount,papers.corpusId,papers.externalIds,papers.fieldsOfStudy,papers.influentialCitationCount,papers.isOpenAccess,papers.journal,papers.openAccessPdf,papers.paperId,papers.publicationDate,papers.publicationTypes,papers.publicationVenue,papers.referenceCount,papers.s2FieldsOfStudy,papers.title,papers.url,papers.venue,papers.year,url");
-            console.info(author);
-
-            if (author.ok) {
-                let data = await author.json();
-                console.info(data);
+        async function fetchSSAutM(sb, authorId, parentUid) {
+            var searchQuery, finalSearchQuery;
+            var blocks = [];
+            if (sb == true) {
+                finalSearchQuery = authorId;
             } else {
-                console.error(data);
-                return "error";
+                let string = "Please enter a Semantic Scholar author ID";
+                searchQuery = await prompt(string, null, 2);
+                if (searchQuery != "cancelled") {
+                    finalSearchQuery = searchQuery;
+                }
+            }
+
+            if (searchQuery == "cancelled") {
+                blocks.push({ "text": "Search cancelled" });
+            } else {
+                // create the API url, only calling data where required 
+                let ssUrl = "https://api.semanticscholar.org/graph/v1/author/" + finalSearchQuery + "?&fields=name,url,authorId";
+
+                if (affiliationsOrder != "Hide") {
+                    ssUrl += ",affiliations";
+                }
+                if (authorsLinksOrder != "Hide") {
+                    ssUrl += ",externalIds";
+                }
+                if (homepageOrder != "Hide") {
+                    ssUrl += ",homepage";
+                }
+                if (citationCountOrder != "Hide") {
+                    ssUrl += ",citationCount";
+                }
+                if (hIndexOrder != "Hide") {
+                    ssUrl += ",hIndex";
+                }
+                if (papersOrder != "Hide") {
+                    ssUrl += ",papers,papers.paperId,papers.corpusId,papers.url,papers.title,papers.venue,papers.publicationVenue,papers.year,papers.authors,papers.externalIds,papers.abstract,papers.referenceCount,papers.citationCount,papers.influentialCitationCount,papers.isOpenAccess,papers.openAccessPdf,papers.fieldsOfStudy,papers.s2FieldsOfStudy,papers.publicationTypes,papers.publicationDate,papers.journal,papers.citationStyles"
+                }
+
+                await fetch(ssUrl)
+                    .then(async (author) => {
+                        console.info(author);
+                        if (author.status == 200) {
+                            let data = await author.json();
+                            console.info(data);
+                            var name = data.name.toString();
+                            var url = data.url;
+
+                            var children = [];
+                            if (affiliationsOrder != "Hide") {
+                                var affiliations = data.affiliations;
+                                if (affiliations.length > 0) {
+                                    var affiliationsString = "**Affiliations:** ";
+                                    for (var i = 0; i < affiliations.length; i++) {
+                                        affiliationsString += "[[" + affiliations[i] + "]] ";
+                                    };
+                                    children.splice(affiliationsOrder, 0, { "text": affiliationsString, });
+                                }
+                            }
+                            if (authorsLinksOrder != "Hide") {
+                                var externalIds = data.externalIds;
+                                var externalIdsString = "[Semantic Scholar](" + url + ")";
+                                if (externalIds.hasOwnProperty("DBLP")) {
+                                    for (var i = 0; i < externalIds.DBLP.length; i++) {
+                                        var string = encodeURIComponent(externalIds.DBLP[i]);
+                                        externalIdsString += " ~ [" + externalIds.DBLP[i] + "](https://dblp.org/search/author?q=" + string + ")";
+                                    }
+                                }
+                                if (externalIds.hasOwnProperty("ORCID")) {
+                                    externalIdsString += " ~ [ORCID](https://orcid.org/" + externalIds.ORCID[0] + ")";
+                                }
+                                children.splice(authorsLinksOrder, 0, { "text": externalIdsString, });
+                            }
+                            if (homepageOrder != "Hide") {
+                                var homepage;
+                                if (data.homepage != null) {
+                                    homepage = data.homepage;
+                                    var homepageString = "**Home Page:** ";
+                                    homepageString += "![](" + homepage + ") ";
+                                    children.splice(homepageOrder, 0, { "text": homepageString, });
+                                }
+                            }
+                            if (citationCountOrder != "Hide") {
+                                var citationCount = data.citationCount;
+                                var citationCountString = "**Citation Count:** " + citationCount + "";
+                                children.splice(citationCountOrder, 0, { "text": citationCountString, });
+                            }
+                            if (hIndexOrder != "Hide") {
+                                var hIndex = data.hIndex;
+                                var hIndexString = "**h-Index:** " + hIndex + "";
+                                children.splice(hIndexOrder, 0, { "text": hIndexString, });
+                            }
+                            if (papersOrder != "Hide" && data.papers.length > 0) {
+                                var papersCount = data.papers.length;
+                                var papers = data.papers;
+                                var papersBlock = [];
+                                for (var i = 0; i < papers.length; i++) {
+                                    // TODO: need to search for existing articles in graph and handle if exists
+                                    var paperTitle = "" + papers[i].title + "";
+                                    if (papers[i].isOpenAccess) {
+                                        paperTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png) #semSchol";
+                                    }
+                                    if (window.roamjs?.extension?.smartblocks) {
+                                        paperTitle += "  {{Import:SmartBlock:SemanticScholarArticle:corpus=" + papers[i].corpusId + "}}";
+                                    }
+                                    papersBlock.push({ "text": paperTitle });
+                                }
+                                children.splice(papersOrder, 0, { "text": "**Papers:** (" + papersCount + ")", "children": papersBlock });
+                            }
+
+                            children.splice(99, 0, { "text": "**Author ID:** " + data.authorId, });
+
+                            // finally, create the blocks object and send for block creation
+                            blocks.push({ "text": "**" + name + "**" + data.authorId, "children": children });
+                        } else if (author.status == 404) {
+                            blocks.push({ "text": "Author not found" });
+                        }
+                    })
+                /*.catch(error => {
+                    blocks.push({ "text": "Too many requests" });
+                });*/
+            }
+
+            var page, newPageName, newPageUid, string, newAuthId;
+            newPageName = blocks[0].text.toString();
+
+            if (newPageName == "Search cancelled") {
+                string = "You cancelled the search";
+                prompt(string, null, 5, 2000);
+            } else if (newPageName == "Author not found") {
+                string = "No authors with this identifier were found";
+                prompt(string, null, 5, 3000);
+            } else if (newPageName == "Too many requests") {
+                if (sb) {
+                    var originalBlockString = await window.roamAlphaAPI.data.pull("[:block/string]", [":block/uid", parentUid])[":block/string"];
+                    var newString = originalBlockString + "{{Import:SmartBlock:SemanticScholarAuthor:author=" + authorId + "}}";
+                    await window.roamAlphaAPI.updateBlock(
+                        { block: { uid: parentUid, string: newString.toString(), open: true } });
+                }
+                string = "There was an error calling the Semantic Scholar API.\nYou might be calling the API too often.\nTry to space out your requests.";
+                prompt(string, null, 5, 5000);
+            } else if (newPageName == "Unknown error. Error sent to browser console.") {
+                prompt(newPageName, null, 3000);
+            } else {
+                if (newPageName.includes("**")) {
+                    newAuthId = newPageName.split("**")[2];
+                    newPageName = newPageName.split("**")[1];
+                }
+                console.info(newAuthId, newPageName);
+
+                // create (or update) the author page
+                page = await window.roamAlphaAPI.q(`
+                    [:find ?e
+                        :where [?e :node/title "${newPageName}"]]`);
+                var matchingPages;
+                var authId, titleUid;
+                var overwrite = false;
+                var firstBlock = newPageName;
+                newPageUid = roamAlphaAPI.util.generateUID();
+                if (page.length < 1) { // create new page as no current page
+                    await window.roamAlphaAPI.createPage({ page: { title: newPageName, uid: newPageUid } });
+                    await window.roamAlphaAPI.updateBlock(
+                        { block: { uid: parentUid, string: "[[" + newPageName + "]]".toString(), open: true } });
+                    parentUid = roamAlphaAPI.util.generateUID();
+                    await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newPageUid, order: 0 }, block: { string: "**" + firstBlock + "**".toString(), uid: parentUid } });
+                    blocks = blocks[0].children;
+                    await createBlocks(blocks, parentUid);
+                } else { // there's already a page with that name
+                    matchingPages = await window.roamAlphaAPI.data.pull("[:block/string :block/uid {:block/children ...}]", [":node/title", newPageName]);
+                    newPageUid = matchingPages[":block/uid"];
+                    if (matchingPages.hasOwnProperty(":block/children")) { // already some children here, so check if contains author metadata
+                        for (var i = 0; i < matchingPages[":block/children"].length; i++) {
+                            if (matchingPages[":block/children"][i][":block/string"] == "**" + newPageName + "**") {
+                                titleUid = matchingPages[":block/children"][i][":block/uid"].toString();
+                            }
+                        };
+                        for (var i = 0; i < matchingPages[":block/children"][0][":block/children"].length; i++) {
+                            let blockString = matchingPages[":block/children"][0][":block/children"][i][":block/string"].toString();
+                            if (blockString.startsWith("**Author ID:**")) {
+                                authId = matchingPages[":block/children"][0][":block/children"][i][":block/string"].toString();
+                                authId = authId.split("**Author ID:**");
+                                authId = authId[1].trim();
+                            }
+                        };
+                    } else { // no block data on matching page title, so just write the author metadata
+                        await window.roamAlphaAPI.updateBlock(
+                            { block: { uid: parentUid, string: "[[" + newPageName + "]]".toString(), open: true } });
+                        parentUid = roamAlphaAPI.util.generateUID();
+                        await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newPageUid, order: 0 }, block: { string: "**" + firstBlock + "**".toString(), uid: parentUid } });
+                        blocks = blocks[0].children;
+                        await createBlocks(blocks, parentUid);
+                    }
+
+                    if (authId != undefined) {
+                        if (authId != newAuthId) { // same page name but different author ID = new article
+                            newPageName = newPageName + " ~ " + newAuthId;
+                            await window.roamAlphaAPI.createPage({ page: { title: newPageName, uid: newPageUid } });
+                            await window.roamAlphaAPI.updateBlock(
+                                { block: { uid: parentUid, string: "[[" + newPageName + "]]".toString(), open: true } });
+                            parentUid = roamAlphaAPI.util.generateUID();
+                            await window.roamAlphaAPI.createBlock({ location: { "parent-uid": newPageUid, order: 0 }, block: { string: "**" + firstBlock + "**".toString(), uid: parentUid } });
+                            blocks = blocks[0].children;
+                            await createBlocks(blocks, parentUid);
+                        } else { // same name, same author ID = same author
+                            var string = "This author is already in your graph. Would you like to update their data?"
+                            overwrite = await prompt(string, null, 1, null);
+
+                            if (overwrite) { // overwrite existing data on the article page
+                                console.info(parentUid, titleUid);
+                                await window.roamAlphaAPI.updateBlock(
+                                    { block: { uid: parentUid, string: "[[" + newPageName + "]]".toString(), open: true } });
+                                if (titleUid != undefined) {
+                                    parentUid = titleUid;
+                                }
+                                console.info(parentUid, titleUid);
+                                // delete current children and replace with new data
+                                for (var i = 0; i < matchingPages[":block/children"].length; i++) {
+                                    if (matchingPages[":block/children"][i][":block/uid"] == parentUid) {
+                                        for (var j = 0; j < matchingPages[":block/children"][i][":block/children"].length; j++) {
+                                            window.roamAlphaAPI.deleteBlock({ block: { uid: matchingPages[":block/children"][i][":block/children"][j][":block/uid"] } });
+                                        }
+                                    }
+                                }
+                                blocks = blocks[0].children;
+                                await createBlocks(blocks, parentUid);
+                                overwrite = false;
+                            }
+                        }
+                    }
+                }
+
+                if (sb != false) {
+                    await window.roamAlphaAPI.ui.rightSidebar.addWindow({ window: { type: 'outline', 'block-uid': newPageUid } });
+                } else {
+                    await window.roamAlphaAPI.ui.mainWindow.openBlock({ block: { uid: newPageUid } });
+                }
+            }
+            if (sb) {
+                return '';
             }
         }
-        */
     },
     onunload: () => {
         if (window.roamjs?.extension?.smartblocks) {
             window.roamjs.extension.smartblocks.unregisterCommand("IMPORTARTICLESEMSCHOL");
+            window.roamjs.extension.smartblocks.unregisterCommand("IMPORTAUTHORSEMSCHOL");
         };
     }
 }
@@ -770,6 +1123,7 @@ async function prompt(string, selectString, type, duration) {
                 title: "Semantic Scholar",
                 message: string,
                 position: "center",
+                onClosed: function () { resolve("cancelled") },
                 inputs: [
                     [
                         '<input type="text" placeholder="">',
@@ -796,11 +1150,10 @@ async function prompt(string, selectString, type, duration) {
                         "<button>Cancel</button>",
                         async function (instance, toast, button, e) {
                             instance.hide({ transitionOut: "fadeOut" }, toast, "button");
+                            resolve("cancelled");
                         },
                     ],
                 ],
-                onClosing: function (instance, toast, closedBy) { },
-                onClosed: function (instance, toast, closedBy) { },
             });
         })
     } else if (type == 3) {
