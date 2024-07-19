@@ -3,6 +3,7 @@ var corpus;
 
 export default {
     onload: ({ extensionAPI }) => {
+        // Roam Depot settings config pages
         const config = {
             tabTitle: "Semantic Scholar",
             settings: [
@@ -134,7 +135,6 @@ export default {
                 },
             ]
         };
-
         const configAut = {
             tabTitle: "Semantic Scholar",
             settings: [
@@ -219,7 +219,6 @@ export default {
                 },
             ]
         };
-
         const configRecRel = {
             tabTitle: "Semantic Scholar",
             settings: [
@@ -256,7 +255,6 @@ export default {
 
         // onload - articles
         var newPage, newPageTitle, journalOrder, articleTypeOrder, authorsOrder, referencesOrder, citationsOrder, infCitationsOrder, sourcesOrder, abstractOrder;
-
         newPage = !extensionAPI.settings.get("ss-newPage");
         if (extensionAPI.settings.get("ss-newPageTitle") == true) {
             newPageTitle = "name";
@@ -306,7 +304,6 @@ export default {
 
         // onload - authors
         var affiliationsOrder, authorsLinksOrder, homepageOrder, papersOrder, citationCountOrder, hIndexOrder, authorsNumber;
-
         if (extensionAPI.settings.get("ss-affiliationsOrder") != null) {
             affiliationsOrder = extensionAPI.settings.get("ss-affiliationsOrder");
         } else {
@@ -434,7 +431,7 @@ export default {
             }
         }
 
-        // onChange - relevance
+        // onChange - recommendations/relevance
         async function setRecRelNumber(evt) {
             const regex = /^\d{1,3}$/;
             var recRelNumberString = evt.target.value;
@@ -448,8 +445,8 @@ export default {
             recRelFOS = evt.target.value;
         }
 
+        // check and create configuration page, with instructions and SmartBlocks
         checkFirstRun();
-
         async function checkFirstRun() {
             var page = await window.roamAlphaAPI.q(`[:find (pull ?page [:block/string :block/uid {:block/children ...}]) :where [?page :node/title "Semantic Scholar configuration"] ]`);
             if (page.length < 1) { // no config page created, so create one
@@ -532,6 +529,7 @@ export default {
             }
         }
 
+        // command palette commands
         extensionAPI.ui.commandPalette.addCommand({
             label: "Semantic Scholar - Article Metadata",
             callback: () => {
@@ -547,7 +545,6 @@ export default {
                 document.querySelector("body")?.click();
             },
         });
-
         extensionAPI.ui.commandPalette.addCommand({
             label: "Semantic Scholar - Author Metadata",
             callback: () => {
@@ -563,7 +560,6 @@ export default {
                 document.querySelector("body")?.click();
             },
         });
-
         extensionAPI.ui.commandPalette.addCommand({
             label: "Semantic Scholar - Find Recommended Papers by Paper",
             callback: () => {
@@ -579,7 +575,6 @@ export default {
                 document.querySelector("body")?.click();
             },
         });
-
         extensionAPI.ui.commandPalette.addCommand({
             label: "Semantic Scholar - Search for Papers by Relevance",
             callback: () => {
@@ -595,7 +590,6 @@ export default {
                 document.querySelector("body")?.click();
             },
         });
-
         extensionAPI.ui.commandPalette.addCommand({
             label: "Semantic Scholar - Search for a Paper by Title",
             callback: () => {
@@ -611,7 +605,6 @@ export default {
                 document.querySelector("body")?.click();
             },
         });
-
         extensionAPI.ui.commandPalette.addCommand({
             label: "Semantic Scholar - Search for Authors by Name",
             callback: () => {
@@ -628,6 +621,7 @@ export default {
             },
         });
 
+        // SmartBlock definitions
         const args = {
             text: "IMPORTARTICLESEMSCHOL",
             help: "Import article from Semantic Scholar",
@@ -637,7 +631,6 @@ export default {
                 return fetchSSArtM(true, corpus, parentUid);
             },
         };
-
         const args1 = {
             text: "IMPORTAUTHORSEMSCHOL",
             help: "Import article from Semantic Scholar",
@@ -647,7 +640,6 @@ export default {
                 return fetchSSAutM(true, author, parentUid);
             },
         };
-
         const args2 = {
             text: "RECOMMENDEDSEMSCHOL",
             help: "Import recommended papers from Semantic Scholar",
@@ -657,7 +649,6 @@ export default {
                 return searchSSRecommended(true, parentUid, searchParams, false);
             },
         };
-
         const args2a = {
             text: "REFRESHRECOMMENDEDSEMSCHOL",
             help: "Refresh recommended papers from Semantic Scholar",
@@ -667,7 +658,6 @@ export default {
                 return searchSSRecommended(true, parentUid, searchParams, true);
             },
         };
-
         const args3 = {
             text: "REFRESHSEMSCHOLRELEVANCESEARCH",
             help: "Refresh relevant paper search results from Semantic Scholar",
@@ -677,7 +667,6 @@ export default {
                 return searchSSArtRelevance(true, parentUid, searchParams, false);
             },
         };
-
         const args4 = {
             text: "MORESEMSCHOLRELEVANCESEARCH",
             help: "Import more relevant paper search results from Semantic Scholar",
@@ -687,7 +676,6 @@ export default {
                 return searchSSArtRelevance(true, parentUid, searchParams, true);
             },
         };
-
         const args5 = {
             text: "REFRESHSEMSCHOLAUTHORSEARCH",
             help: "Refresh author search results from Semantic Scholar",
@@ -697,7 +685,6 @@ export default {
                 return searchSSAutName(true, parentUid, searchParams, false);
             },
         };
-
         const args6 = {
             text: "MORESEMSCHOLAUTHORSEARCH",
             help: "Import more author search results from Semantic Scholar",
@@ -733,6 +720,7 @@ export default {
             );
         }
 
+        // the actual functions to get data from Semantic Scholar
         async function fetchSSArtM(sb, corpus, parentUid) {
             var searchQuery, finalSearchQuery;
             var blocks = [];
@@ -2269,6 +2257,7 @@ export default {
         }
     },
     onunload: () => {
+        // remove SmartBlock definitions onunload
         if (window.roamjs?.extension?.smartblocks) {
             window.roamjs.extension.smartblocks.unregisterCommand("IMPORTARTICLESEMSCHOL");
             window.roamjs.extension.smartblocks.unregisterCommand("IMPORTAUTHORSEMSCHOL");
@@ -2282,10 +2271,10 @@ export default {
     }
 }
 
+// helper functions
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
 async function prompt(string, selectString, type, duration) {
     if (type == 1) {
         return new Promise((resolve) => {
@@ -2536,7 +2525,6 @@ async function prompt(string, selectString, type, duration) {
         })
     }
 }
-
 async function createBlocks(blocks, parentUid) {
     await sleep(50); // brief pause
     blocks.forEach((node, order) => {
@@ -2547,7 +2535,6 @@ async function createBlocks(blocks, parentUid) {
         })
     });
 }
-
 // copied and adapted from https://github.com/dvargas92495/roamjs-components/blob/main/src/writes/createBlock.ts
 const createBlock = (params) => {
     const uid = window.roamAlphaAPI.util.generateUID();
@@ -2566,7 +2553,6 @@ const createBlock = (params) => {
         createBlock({ parentUid: uid, order, node })
     )))
 };
-
 // https://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
 String.prototype.toTitleCase = function () {
     var i, j, str, lowers, uppers;
