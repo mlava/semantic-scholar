@@ -12,6 +12,10 @@ There are a number of ways to access the data:
 
 All six options can have Roam Research hotkeys enabled to make searching for new data as quick as a keystroke!
 
+Please note that the Semantic Scholar API offers an API token by sign-up, however this extension does not need an API token to work. I have not yet been able to obtain a token, and so have not implemented API tokens in this extension. I will update if I can obtain a token from Semantic Scholar.
+
+Without a token, the Semantic Scholar API will sometimes complain that you are trying to import data too often. I have implemented a retry mechanism that will attempt up to ten times at ten second intervals, and will provide feedback about what is happening.
+
 To import a specific article, you can use IDs from Semantic Scholar (Corpus Id or Paper Id), DOI, Association for Computational Linguistics ID (ACL), arXiv ID, Microsoft Academic Graph ID (MAG), PubMed ID or PubMed Central ID. You can control which data is retrieved for an individual article by setting your preferences in the Roam Depot settings in the Article tab.
 
 <img width="763" alt="image" src="https://github.com/user-attachments/assets/0c76a1d1-ed90-461d-a780-4a9096b89696">
