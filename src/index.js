@@ -1564,7 +1564,7 @@ export default {
                 return '';
             }
         }
-
+        // TODO: put more information in each output line like author search, to enable choosing
         async function searchSSArtRelevance(sb, parentUid, searchParams, more) {
             var searchQuery, finalSearchQuery, yearsSearch, openAccessSearch, openAccessPDFSearch, offset, minCitationCount, venue;
             var blocks = [];
