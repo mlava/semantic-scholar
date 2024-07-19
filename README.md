@@ -30,7 +30,7 @@ You can choose to hide certain types of data from Article or Author import, and 
 
 You can search for a paper by title, and Semantic Scholar will only return a single result. Of course, you can filter the search to limit to particular Fields of Study, years of publication, venue of publication, minimum citation count, Open Access status and the availability of an Open Access PDF.
 
-<img width="822" alt="image" src="https://github.com/user-attachments/assets/6793b530-559b-4570-98f8-1320575c4d03">
+<img width="833" alt="image" src="https://github.com/user-attachments/assets/02c64cf0-9e94-4951-8263-5bc8ace7b20f">
 
 Or, search for an author by name and Semantic Scholar will return a list of authors. You can define how many you want to retrieve in the Author tab in settings.
 
@@ -38,7 +38,7 @@ Or, search for an author by name and Semantic Scholar will return a list of auth
 
 Semantic Scholar uses a machine learning algorithm to determine relationships between articles, and you can access this feature in two ways. The first is to search for articles using the Relevance Search feature. You can enter a search term and a variety of filters to find the most accurate results.
 
-<img width="767" alt="image" src="https://github.com/user-attachments/assets/1d1be7b3-112a-4e30-b7b0-a773ff6a870d">
+<img width="778" alt="image" src="https://github.com/user-attachments/assets/3ad6d658-dc0c-47b2-b8bc-810c3bfb8796">
 
 Or, search for recommended articles related to a specific article using the article Paper Id from Semantic Scholar.
 
