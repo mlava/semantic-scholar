@@ -531,7 +531,7 @@ export default {
 
         // command palette commands
         extensionAPI.ui.commandPalette.addCommand({
-            label: "Semantic Scholar - Article Metadata",
+            label: "Semantic Scholar - Get Article Metadata",
             callback: () => {
                 var parentUid = window.roamAlphaAPI.ui.getFocusedBlock()?.["block-uid"];
                 if (parentUid == undefined) {
@@ -546,7 +546,7 @@ export default {
             },
         });
         extensionAPI.ui.commandPalette.addCommand({
-            label: "Semantic Scholar - Author Metadata",
+            label: "Semantic Scholar - Get Author Metadata",
             callback: () => {
                 var parentUid = window.roamAlphaAPI.ui.getFocusedBlock()?.["block-uid"];
                 if (parentUid == undefined) {
@@ -561,7 +561,7 @@ export default {
             },
         });
         extensionAPI.ui.commandPalette.addCommand({
-            label: "Semantic Scholar - Find Recommended Papers by Paper",
+            label: "Semantic Scholar - Find Recommended Articles by Paper",
             callback: () => {
                 var parentUid = window.roamAlphaAPI.ui.getFocusedBlock()?.["block-uid"];
                 if (parentUid == undefined) {
@@ -576,7 +576,7 @@ export default {
             },
         });
         extensionAPI.ui.commandPalette.addCommand({
-            label: "Semantic Scholar - Search for Papers by Relevance",
+            label: "Semantic Scholar - Search for Articles by Relevance",
             callback: () => {
                 var parentUid = window.roamAlphaAPI.ui.getFocusedBlock()?.["block-uid"];
                 if (parentUid == undefined) {
@@ -591,7 +591,7 @@ export default {
             },
         });
         extensionAPI.ui.commandPalette.addCommand({
-            label: "Semantic Scholar - Search for a Paper by Title",
+            label: "Semantic Scholar - Search for an Article by Title",
             callback: () => {
                 var parentUid = window.roamAlphaAPI.ui.getFocusedBlock()?.["block-uid"];
                 if (parentUid == undefined) {
@@ -624,7 +624,7 @@ export default {
         // SmartBlock definitions
         const args = {
             text: "IMPORTARTICLESEMSCHOL",
-            help: "Import article from Semantic Scholar",
+            help: "Import an article from Semantic Scholar",
             handler: (context) => () => {
                 corpus = context.variables.corpusId;
                 var parentUid = context.triggerUid;
@@ -633,7 +633,7 @@ export default {
         };
         const args1 = {
             text: "IMPORTAUTHORSEMSCHOL",
-            help: "Import article from Semantic Scholar",
+            help: "Import an author from Semantic Scholar",
             handler: (context) => () => {
                 var author = context.variables.authorId;
                 var parentUid = context.triggerUid;
