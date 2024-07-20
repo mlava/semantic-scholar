@@ -303,8 +303,6 @@ export default {
             abstractOrder = 8;
         }
 
-        console.info(journalOrder, articleTypeOrder, authorsOrder, referencesOrder, citationsOrder, infCitationsOrder, sourcesOrder, abstractOrder);
-
         // onload - authors
         var affiliationsOrder, authorsLinksOrder, homepageOrder, papersOrder, citationCountOrder, hIndexOrder, authorsNumber;
         if (extensionAPI.settings.get("ss-affiliationsOrder") != null) {
@@ -342,8 +340,6 @@ export default {
         } else {
             authorsNumber = 20;
         }
-
-        console.info(affiliationsOrder, authorsLinksOrder, homepageOrder, citationCountOrder, hIndexOrder, papersOrder, authorsNumber);
 
         // onLoad - recommendations/relevance
         var recRelNumber = 20;
@@ -1310,7 +1306,7 @@ export default {
                             }
                             authorIdString = "**Author ID:** " + data.authorId;
                             children.splice(99, 0, { "text": "**Author ID:** " + data.authorId, });
-                            console.info(children);
+                            
                             // finally, create the blocks object and send for block creation
                             blocks.push({ "text": "**" + name + "**" + data.authorId, "children": children });
                         } else if (author.status == 404) {
