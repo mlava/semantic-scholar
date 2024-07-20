@@ -54,7 +54,7 @@ export default {
                     },
                 },
                 {
-                    id: "rec-journalOrder",
+                    id: "ss-journalOrder",
                     name: "Journal reference",
                     description: "Which position to place the journal reference data",
                     action: {
@@ -64,7 +64,7 @@ export default {
                     }
                 },
                 {
-                    id: "rec-articleType",
+                    id: "ss-articleType",
                     name: "Article type",
                     description: "Which position to place the article type",
                     action: {
@@ -74,7 +74,7 @@ export default {
                     }
                 },
                 {
-                    id: "rec-authorsOrder",
+                    id: "ss-authorsOrder",
                     name: "Authors",
                     description: "Which position to place the Authors",
                     action: {
@@ -84,7 +84,7 @@ export default {
                     }
                 },
                 {
-                    id: "rec-referencesOrder",
+                    id: "ss-referencesOrder",
                     name: "References",
                     description: "Which position to place the article's references",
                     action: {
@@ -94,7 +94,7 @@ export default {
                     }
                 },
                 {
-                    id: "rec-citationsOrder",
+                    id: "ss-citationsOrder",
                     name: "Citations",
                     description: "Which position to place the citations",
                     action: {
@@ -104,7 +104,7 @@ export default {
                     }
                 },
                 {
-                    id: "rec-infCitationsOrder",
+                    id: "ss-infCitationsOrder",
                     name: "Influential citations",
                     description: "Which position to place the influential citations",
                     action: {
@@ -114,7 +114,7 @@ export default {
                     }
                 },
                 {
-                    id: "rec-sourcesOrder",
+                    id: "ss-sourcesOrder",
                     name: "Article sources",
                     description: "Which position to place the source links",
                     action: {
@@ -124,7 +124,7 @@ export default {
                     }
                 },
                 {
-                    id: "rec-abstractOrder",
+                    id: "ss-abstractOrder",
                     name: "Abstract",
                     description: "Which position to place the abstract",
                     action: {
@@ -253,6 +253,7 @@ export default {
             ]
         };
 
+
         // onload - articles
         var newPage, newPageTitle, journalOrder, articleTypeOrder, authorsOrder, referencesOrder, citationsOrder, infCitationsOrder, sourcesOrder, abstractOrder;
         newPage = !extensionAPI.settings.get("ss-newPage");
@@ -262,83 +263,87 @@ export default {
             newPageTitle = "citekey";
         }
         if (extensionAPI.settings.get("ss-journalOrder") != null) {
-            journalOrder = extensionAPI.settings.get("ss-journalOrder");
+            journalOrder = parseInt(extensionAPI.settings.get("ss-journalOrder"));
         } else {
             journalOrder = 1;
         }
         if (extensionAPI.settings.get("ss-articleTypeOrder") != null) {
-            articleTypeOrder = extensionAPI.settings.get("ss-articleTypeOrder");
+            articleTypeOrder = parseInt(extensionAPI.settings.get("ss-articleTypeOrder"));
         } else {
             articleTypeOrder = 2;
         }
         if (extensionAPI.settings.get("ss-authorsOrder") != null) {
-            authorsOrder = extensionAPI.settings.get("ss-authorsOrder");
+            authorsOrder = parseInt(extensionAPI.settings.get("ss-authorsOrder"));
         } else {
             authorsOrder = 3;
         }
         if (extensionAPI.settings.get("ss-referencesOrder") != null) {
-            referencesOrder = extensionAPI.settings.get("ss-referencesOrder");
+            referencesOrder = parseInt(extensionAPI.settings.get("ss-referencesOrder"));
         } else {
             referencesOrder = 4;
         }
         if (extensionAPI.settings.get("ss-citationsOrder") != null) {
-            citationsOrder = extensionAPI.settings.get("ss-citationsOrder");
+            citationsOrder = parseInt(extensionAPI.settings.get("ss-citationsOrder"));
         } else {
             citationsOrder = 5;
         }
         if (extensionAPI.settings.get("ss-infCitationsOrder") != null) {
-            infCitationsOrder = extensionAPI.settings.get("ss-infCitationsOrder");
+            infCitationsOrder = parseInt(extensionAPI.settings.get("ss-infCitationsOrder"));
         } else {
             infCitationsOrder = 6;
         }
         if (extensionAPI.settings.get("ss-sourcesOrder") != null) {
-            sourcesOrder = extensionAPI.settings.get("ss-sourcesOrder");
+            sourcesOrder = parseInt(extensionAPI.settings.get("ss-sourcesOrder"));
         } else {
             sourcesOrder = 7;
         }
         if (extensionAPI.settings.get("ss-abstractOrder") != null) {
-            abstractOrder = extensionAPI.settings.get("ss-abstractOrder");
+            abstractOrder = parseInt(extensionAPI.settings.get("ss-abstractOrder"));
         } else {
             abstractOrder = 8;
         }
 
+        console.info(journalOrder, articleTypeOrder, authorsOrder, referencesOrder, citationsOrder, infCitationsOrder, sourcesOrder, abstractOrder);
+
         // onload - authors
         var affiliationsOrder, authorsLinksOrder, homepageOrder, papersOrder, citationCountOrder, hIndexOrder, authorsNumber;
         if (extensionAPI.settings.get("ss-affiliationsOrder") != null) {
-            affiliationsOrder = extensionAPI.settings.get("ss-affiliationsOrder");
+            affiliationsOrder = parseInt(extensionAPI.settings.get("ss-affiliationsOrder"));
         } else {
             affiliationsOrder = 1;
         }
         if (extensionAPI.settings.get("ss-authorsLinksOrder") != null) {
-            authorsLinksOrder = extensionAPI.settings.get("ss-authorsLinksOrder");
+            authorsLinksOrder = parseInt(extensionAPI.settings.get("ss-authorsLinksOrder"));
         } else {
             authorsLinksOrder = 2;
         }
         if (extensionAPI.settings.get("ss-homepageOrder") != null) {
-            homepageOrder = extensionAPI.settings.get("ss-homepageOrder");
+            homepageOrder = parseInt(extensionAPI.settings.get("ss-homepageOrder"));
         } else {
             homepageOrder = 3;
         }
         if (extensionAPI.settings.get("ss-citationCountOrder") != null) {
-            citationCountOrder = extensionAPI.settings.get("ss-citationCountOrder");
+            citationCountOrder = parseInt(extensionAPI.settings.get("ss-citationCountOrder"));
         } else {
             citationCountOrder = 4;
         }
         if (extensionAPI.settings.get("ss-hIndexOrder") != null) {
-            hIndexOrder = extensionAPI.settings.get("ss-hIndexOrder");
+            hIndexOrder = parseInt(extensionAPI.settings.get("ss-hIndexOrder"));
         } else {
             hIndexOrder = 5;
         }
         if (extensionAPI.settings.get("ss-papersOrder") != null) {
-            papersOrder = extensionAPI.settings.get("ss-papersOrder");
+            papersOrder = parseInt(extensionAPI.settings.get("ss-papersOrder"));
         } else {
             papersOrder = 6;
         }
         if (extensionAPI.settings.get("ss-authorsNumber") != null) {
-            authorsNumber = extensionAPI.settings.get("ss-authorsNumber");
+            authorsNumber = parseInt(extensionAPI.settings.get("ss-authorsNumber"));
         } else {
             authorsNumber = 20;
         }
+
+        console.info(affiliationsOrder, authorsLinksOrder, homepageOrder, citationCountOrder, hIndexOrder, papersOrder, authorsNumber);
 
         // onLoad - recommendations/relevance
         var recRelNumber = 20;
@@ -378,48 +383,48 @@ export default {
             }
         }
         async function setJournalOrder(evt) {
-            journalOrder = evt;
+            journalOrder = parseInt(evt);
         }
         async function setArtTypeOrder(evt) {
-            articleTypeOrder = evt;
+            articleTypeOrder = parseInt(evt);
         }
         async function setAuthOrder(evt) {
-            authorsOrder = evt;
+            authorsOrder = parseInt(evt);
         }
         async function setRefsOrder(evt) {
-            referencesOrder = evt;
+            referencesOrder = parseInt(evt);
         }
         async function setCitOrder(evt) {
-            citationsOrder = evt;
+            citationsOrder = parseInt(evt);
         }
         async function setInfCitOrder(evt) {
-            infCitationsOrder = evt;
+            infCitationsOrder = parseInt(evt);
         }
         async function setSourcesOrder(evt) {
-            sourcesOrder = evt;
+            sourcesOrder = parseInt(evt);
         }
         async function setAbstractOrder(evt) {
-            abstractOrder = evt;
+            abstractOrder = parseInt(evt);
         }
 
         // onChange - authors
         async function setAffiliationsOrder(evt) {
-            affiliationsOrder = evt;
+            affiliationsOrder = parseInt(evt);
         }
         async function setAuthorsLinksOrder(evt) {
-            authorsLinksOrder = evt;
+            authorsLinksOrder = parseInt(evt);
         }
         async function setHomepageOrder(evt) {
-            homepageOrder = evt;
+            homepageOrder = parseInt(evt);
         }
         async function setCitCountOrder(evt) {
-            citationCountOrder = evt;
+            citationCountOrder = parseInt(evt);
         }
         async function sethIndexOrder(evt) {
-            hIndexOrder = evt;
+            hIndexOrder = parseInt(evt);
         }
         async function setPapersOrder(evt) {
-            papersOrder = evt;
+            papersOrder = parseInt(evt);
         }
         async function setAuthorsNumber(evt) {
             const regex = /^\d{1,3}$/;
@@ -849,7 +854,7 @@ export default {
                                         journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/pdf.png)[🔗](" + openAccessPdf + ")";
                                     }
                                 }
-                                children.splice(journalOrder, 0, { "text": journalString, });
+                                children[journalOrder-1] = { "text": journalString, };
                             }
                         }
                         if (articleTypeOrder != "Hide") {
@@ -863,7 +868,7 @@ export default {
                                         typeString += "[[" + publicationTypes[i] + "]] ";
                                     }
                                 };
-                                children.splice(articleTypeOrder, 0, { "text": typeString, });
+                                children[articleTypeOrder-1] = { "text": typeString, };
                             }
                         }
                         if (authorsOrder != "Hide") {
@@ -897,7 +902,7 @@ export default {
                                 }
                                 authorsBlock.push({ "text": authorString, });
                             }
-                            children.splice(authorsOrder, 0, { "text": "**Authors:** (" + authors.length + ")", "children": authorsBlock });
+                            children[authorsOrder-1] = { "text": "**Authors:** (" + authors.length + ")", "children": authorsBlock };
                         }
                         if (referencesOrder != "Hide") {
                             var referenceCount = data.referenceCount;
@@ -938,7 +943,7 @@ export default {
                                 }
                                 referencesBlock.push({ "text": refTitle });
                             }
-                            children.splice(referencesOrder, 0, { "text": "**References:** (" + referenceCount + ")", "children": referencesBlock });
+                            children[referencesOrder-1] = { "text": "**References:** (" + referenceCount + ")", "children": referencesBlock };
                         }
                         if (citationsOrder != "Hide") {
                             var citationCount = data.citationCount;
@@ -979,11 +984,11 @@ export default {
                                 }
                                 citationsBlock.push({ "text": citTitle });
                             }
-                            children.splice(citationsOrder, 0, { "text": "**Citations:** (" + citationCount + ")", "children": citationsBlock });
+                            children[citationsOrder-1] = { "text": "**Citations:** (" + citationCount + ")", "children": citationsBlock };
                         }
                         if (infCitationsOrder != "Hide") {
                             var influentialCitationCount = data.influentialCitationCount;
-                            children.splice(infCitationsOrder, 0, { "text": "**Influential Citations:** " + influentialCitationCount + "", });
+                            children[infCitationsOrder-1] = { "text": "**Influential Citations:** " + influentialCitationCount + "", };
                         }
                         if (sourcesOrder != "Hide") {
                             var externalLinks = "[Semantic Scholar](" + url + ")";
@@ -996,13 +1001,13 @@ export default {
                             if (data.externalIds.hasOwnProperty("ArXiv")) {
                                 externalLinks += "  ~  [ArXiv](https://arxiv.org/abs/" + data.externalIds.ArXiv + ")";
                             }
-                            children.splice(sourcesOrder, 0, { "text": externalLinks, });
+                            children[sourcesOrder-1] = { "text": externalLinks, };
                         }
                         if (abstractOrder != "Hide") {
                             if (data.hasOwnProperty("abstract") && data.abstract != null) {
                                 var abstract = data.abstract;
                                 if (abstract != undefined) {
-                                    children.splice(abstractOrder, 0, { "text": "**Abstract:**", "children": [{ "text": abstract, }] });
+                                    children[abstractOrder-1] = { "text": "**Abstract:**", "children": [{ "text": abstract, }], };
                                 }
                             }
                         }
@@ -1225,7 +1230,7 @@ export default {
                                     for (var i = 0; i < affiliations.length; i++) {
                                         affiliationsString += "[[" + affiliations[i] + "]] ";
                                     };
-                                    children.splice(affiliationsOrder, 0, { "text": affiliationsString, });
+                                    children[affiliationsOrder-1] = { "text": affiliationsString, };
                                 }
                             }
                             if (authorsLinksOrder != "Hide") {
@@ -1240,7 +1245,7 @@ export default {
                                 if (externalIds.hasOwnProperty("ORCID")) {
                                     externalIdsString += " ~ [ORCID](https://orcid.org/" + externalIds.ORCID[0] + ")";
                                 }
-                                children.splice(authorsLinksOrder, 0, { "text": externalIdsString, });
+                                children[authorsLinksOrder-1] = { "text": externalIdsString, };
                             }
                             if (homepageOrder != "Hide") {
                                 var homepage;
@@ -1248,18 +1253,18 @@ export default {
                                     homepage = data.homepage;
                                     var homepageString = "**Home Page:** ";
                                     homepageString += "![](" + homepage + ") ";
-                                    children.splice(homepageOrder, 0, { "text": homepageString, });
+                                    children[homepageOrder-1] = { "text": homepageString, };
                                 }
                             }
                             if (citationCountOrder != "Hide") {
                                 var citationCount = data.citationCount;
                                 var citationCountString = "**Citation Count:** " + citationCount + "";
-                                children.splice(citationCountOrder, 0, { "text": citationCountString, });
+                                children[citationCountOrder-1] = { "text": citationCountString, };
                             }
                             if (hIndexOrder != "Hide") {
                                 var hIndex = data.hIndex;
                                 var hIndexString = "**h-Index:** " + hIndex + "";
-                                children.splice(hIndexOrder, 0, { "text": hIndexString, });
+                                children[hIndexOrder-1] = { "text": hIndexString, };
                             }
                             if (papersOrder != "Hide" && data.papers.length > 0) {
                                 var papersCount = data.papers.length;
@@ -1301,11 +1306,11 @@ export default {
                                     }
                                     papersBlock.push({ "text": paperTitle });
                                 }
-                                children.splice(papersOrder, 0, { "text": "**Papers:** (" + papersCount + ")", "children": papersBlock });
+                                children[papersOrder-1] = { "text": "**Papers:** (" + papersCount + ")", "children": papersBlock , };
                             }
                             authorIdString = "**Author ID:** " + data.authorId;
                             children.splice(99, 0, { "text": "**Author ID:** " + data.authorId, });
-
+                            console.info(children);
                             // finally, create the blocks object and send for block creation
                             blocks.push({ "text": "**" + name + "**" + data.authorId, "children": children });
                         } else if (author.status == 404) {
