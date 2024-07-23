@@ -253,7 +253,6 @@ export default {
             ]
         };
 
-
         // onload - articles
         var newPage, newPageTitle, journalOrder, articleTypeOrder, authorsOrder, referencesOrder, citationsOrder, infCitationsOrder, sourcesOrder, abstractOrder;
         newPage = !extensionAPI.settings.get("ss-newPage");
@@ -741,7 +740,7 @@ export default {
                     }
                 }
             }
-            
+
             if (searchQuery == "cancelled") {
                 blocks.push({ "text": "Search cancelled" });
             } else {
@@ -840,6 +839,7 @@ export default {
                                 if (pages != undefined) {
                                     journalString += ":" + pages + "";
                                 }
+                                console.info(isOpenAccess, openAccessPdf);
                                 if (isOpenAccess) {
                                     if (data.externalIds.hasOwnProperty("DOI")) {
                                         journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png)[🔗](https://doi.org/" + data.externalIds.DOI + ") #semSchol";
@@ -850,7 +850,7 @@ export default {
                                         journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/pdf.png)[🔗](" + openAccessPdf + ")";
                                     }
                                 }
-                                children[journalOrder-1] = { "text": journalString, };
+                                children[journalOrder - 1] = { "text": journalString, };
                             }
                         }
                         if (articleTypeOrder != "Hide") {
@@ -864,7 +864,7 @@ export default {
                                         typeString += "[[" + publicationTypes[i] + "]] ";
                                     }
                                 };
-                                children[articleTypeOrder-1] = { "text": typeString, };
+                                children[articleTypeOrder - 1] = { "text": typeString, };
                             }
                         }
                         if (authorsOrder != "Hide") {
@@ -898,7 +898,7 @@ export default {
                                 }
                                 authorsBlock.push({ "text": authorString, });
                             }
-                            children[authorsOrder-1] = { "text": "**Authors:** (" + authors.length + ")", "children": authorsBlock };
+                            children[authorsOrder - 1] = { "text": "**Authors:** (" + authors.length + ")", "children": authorsBlock };
                         }
                         if (referencesOrder != "Hide") {
                             var referenceCount = data.referenceCount;
@@ -939,7 +939,7 @@ export default {
                                 }
                                 referencesBlock.push({ "text": refTitle });
                             }
-                            children[referencesOrder-1] = { "text": "**References:** (" + referenceCount + ")", "children": referencesBlock };
+                            children[referencesOrder - 1] = { "text": "**References:** (" + referenceCount + ")", "children": referencesBlock };
                         }
                         if (citationsOrder != "Hide") {
                             var citationCount = data.citationCount;
@@ -980,11 +980,11 @@ export default {
                                 }
                                 citationsBlock.push({ "text": citTitle });
                             }
-                            children[citationsOrder-1] = { "text": "**Citations:** (" + citationCount + ")", "children": citationsBlock };
+                            children[citationsOrder - 1] = { "text": "**Citations:** (" + citationCount + ")", "children": citationsBlock };
                         }
                         if (infCitationsOrder != "Hide") {
                             var influentialCitationCount = data.influentialCitationCount;
-                            children[infCitationsOrder-1] = { "text": "**Influential Citations:** " + influentialCitationCount + "", };
+                            children[infCitationsOrder - 1] = { "text": "**Influential Citations:** " + influentialCitationCount + "", };
                         }
                         if (sourcesOrder != "Hide") {
                             var externalLinks = "[Semantic Scholar](" + url + ")";
@@ -997,13 +997,13 @@ export default {
                             if (data.externalIds.hasOwnProperty("ArXiv")) {
                                 externalLinks += "  ~  [ArXiv](https://arxiv.org/abs/" + data.externalIds.ArXiv + ")";
                             }
-                            children[sourcesOrder-1] = { "text": externalLinks, };
+                            children[sourcesOrder - 1] = { "text": externalLinks, };
                         }
                         if (abstractOrder != "Hide") {
                             if (data.hasOwnProperty("abstract") && data.abstract != null) {
                                 var abstract = data.abstract;
                                 if (abstract != undefined) {
-                                    children[abstractOrder-1] = { "text": "**Abstract:**", "children": [{ "text": abstract, }], };
+                                    children[abstractOrder - 1] = { "text": "**Abstract:**", "children": [{ "text": abstract, }], };
                                 }
                             }
                         }
@@ -1173,6 +1173,7 @@ export default {
             }
         }
 
+        // TODO: implement fetch/retry and parentUid feedback to user, like article metadata import
         async function fetchSSAutM(sb, authorId, parentUid) {
             var searchQuery, finalSearchQuery, authorIdString;
             var blocks = [];
@@ -1226,7 +1227,7 @@ export default {
                                     for (var i = 0; i < affiliations.length; i++) {
                                         affiliationsString += "[[" + affiliations[i] + "]] ";
                                     };
-                                    children[affiliationsOrder-1] = { "text": affiliationsString, };
+                                    children[affiliationsOrder - 1] = { "text": affiliationsString, };
                                 }
                             }
                             if (authorsLinksOrder != "Hide") {
@@ -1241,7 +1242,7 @@ export default {
                                 if (externalIds.hasOwnProperty("ORCID")) {
                                     externalIdsString += " ~ [ORCID](https://orcid.org/" + externalIds.ORCID[0] + ")";
                                 }
-                                children[authorsLinksOrder-1] = { "text": externalIdsString, };
+                                children[authorsLinksOrder - 1] = { "text": externalIdsString, };
                             }
                             if (homepageOrder != "Hide") {
                                 var homepage;
@@ -1249,18 +1250,18 @@ export default {
                                     homepage = data.homepage;
                                     var homepageString = "**Home Page:** ";
                                     homepageString += "![](" + homepage + ") ";
-                                    children[homepageOrder-1] = { "text": homepageString, };
+                                    children[homepageOrder - 1] = { "text": homepageString, };
                                 }
                             }
                             if (citationCountOrder != "Hide") {
                                 var citationCount = data.citationCount;
                                 var citationCountString = "**Citation Count:** " + citationCount + "";
-                                children[citationCountOrder-1] = { "text": citationCountString, };
+                                children[citationCountOrder - 1] = { "text": citationCountString, };
                             }
                             if (hIndexOrder != "Hide") {
                                 var hIndex = data.hIndex;
                                 var hIndexString = "**h-Index:** " + hIndex + "";
-                                children[hIndexOrder-1] = { "text": hIndexString, };
+                                children[hIndexOrder - 1] = { "text": hIndexString, };
                             }
                             if (papersOrder != "Hide" && data.papers.length > 0) {
                                 var papersCount = data.papers.length;
@@ -1302,11 +1303,11 @@ export default {
                                     }
                                     papersBlock.push({ "text": paperTitle });
                                 }
-                                children[papersOrder-1] = { "text": "**Papers:** (" + papersCount + ")", "children": papersBlock , };
+                                children[papersOrder - 1] = { "text": "**Papers:** (" + papersCount + ")", "children": papersBlock, };
                             }
                             authorIdString = "**Author ID:** " + data.authorId;
                             children.splice(99, 0, { "text": "**Author ID:** " + data.authorId, });
-                            
+
                             // finally, create the blocks object and send for block creation
                             blocks.push({ "text": "**" + name + "**" + data.authorId, "children": children });
                         } else if (author.status == 404) {
@@ -1386,7 +1387,7 @@ export default {
                         blocks = blocks[0].children;
                         await createBlocks(blocks, parentUid);
                     }
-                    
+
                     if (authId != undefined) {
                         if (authId != newAuthId) { // same page name but different author ID = new author
                             newPageName = newPageName + " ~ " + newAuthId;
@@ -1435,6 +1436,7 @@ export default {
             }
         }
 
+        // TODO: implement fetch/retry and parentUid feedback to user, like article metadata import
         async function searchSSRecommended(sb, parentUid, searchParams, refresh) {
             var finalSearchQuery;
             var blocks = [];
@@ -1514,7 +1516,7 @@ export default {
                         }
                     });
             }
-            
+
             var newPageName, string;
             newPageName = blocks[0].text.toString();
 
