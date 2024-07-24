@@ -1,6 +1,6 @@
 Access the scientific literature right within your Roam Research graph.
 
-This extension allows you to get data from the 214 Million Papers, 2.49 Billion Citations and 79 Million Authors in Semantic Scholar database.
+This extension allows you to get data from the 214 Million Papers, 2.49 Billion Citations and 79 Million Authors in the Semantic Scholar database.
 
 There are a number of ways to access the data:
 - Article title search
@@ -12,9 +12,9 @@ There are a number of ways to access the data:
 
 All six options can have Roam Research hotkeys enabled to make searching for new data as quick as a keystroke!
 
-Please note that the Semantic Scholar API offers an API token by sign-up, however this extension does not need an API token to work. I have not yet been able to obtain a token, and so have not implemented API tokens in this extension. I will update if I can obtain a token from Semantic Scholar.
-
-Without a token, the Semantic Scholar API will sometimes complain that you are trying to import data too often. I have implemented a retry mechanism that will attempt up to ten times at ten second intervals, and will provide feedback about what is happening.
+**Notes:**
+- Please note that Semantic Scholar offers an API key by application, however this extension DOES NOT need an API key to work. Without an API key, Semantic Scholar limits calls to their API, and you might receive an error message that you are trying to import data too often. I have implemented a retry mechanism that will attempt up to ten times at ten second intervals, and will provide feedback about what is happening.
+- You can apply for an API key at https://www.semanticscholar.org/product/api#api-key. If you are approved, you can enter the token in the Roam Depot settings for this extension, under the 'Set Here' or 'Home' tab.
 
 To import a specific article, you can use IDs from Semantic Scholar (Corpus Id or Paper Id), DOI, Association for Computational Linguistics ID (ACL), arXiv ID, Microsoft Academic Graph ID (MAG), PubMed ID or PubMed Central ID. You can control which data is retrieved for an individual article by setting your preferences in the Roam Depot settings in the Article tab.
 
