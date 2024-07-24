@@ -17,6 +17,15 @@ export default {
                         onChange: (evt) => { setConfig(evt); }
                     }
                 },
+                {
+                    id: "ss-apikey",
+                    name: "API key",
+                    description: "(Optional) Add an API key from Semantic Scholar to reduce the chances of receiving an error message about too many requests. You can apply for an API key at https://www.semanticscholar.org/product/api#api-key",
+                    action: {
+                        type: "input", placeholder: "Optional API key",
+                        onChange: (evt) => { setAPIKey(evt); }
+                    }
+                },
             ]
         };
         extensionAPI.settings.set("ss-config", "Set Here");
@@ -253,6 +262,12 @@ export default {
             ]
         };
 
+        // onload - API key
+        var apiKey;
+        if (extensionAPI.settings.get("ss-apikey")) {
+            apiKey = extensionAPI.settings.get("ss-apikey");
+        }
+
         // onload - articles
         var newPage, newPageTitle, journalOrder, articleTypeOrder, authorsOrder, referencesOrder, citationsOrder, infCitationsOrder, sourcesOrder, abstractOrder;
         newPage = !extensionAPI.settings.get("ss-newPage");
@@ -353,6 +368,15 @@ export default {
         }
         if (extensionAPI.settings.get("ss-recRelFOS")) {
             recRelFOS = extensionAPI.settings.get("ss-recRelFOS");
+        }
+
+        // onChange - API Key
+        async function setAPIKey(evt) {
+            if (evt.target.value != "") {
+                apiKey = evt.target.value;
+            } else {
+                apiKey = null;
+            }
         }
 
         // onChange - articles
@@ -772,7 +796,17 @@ export default {
                     ssUrl += ",externalIds"
                 }
 
-                async function fetchRetry(url, delay, tries, fetchOptions = {}) {
+                var myHeaders = new Headers();
+                var fetchOptions = {};
+                if (apiKey != undefined && apiKey != null) {
+                    myHeaders.append("x-api-key", apiKey);
+                    fetchOptions = {
+                        method: 'GET',
+                        headers: myHeaders,
+                    };
+                }
+
+                async function fetchRetry(url, delay, tries, fetchOptions) {
                     await window.roamAlphaAPI.updateBlock(
                         { block: { uid: parentUid, string: "Contacting Semantic Scholar", open: true } });
                     async function onError(err) {
@@ -791,7 +825,7 @@ export default {
 
                 var triesLeft = 10;
                 var delay = 10000;
-                await fetchRetry(ssUrl, delay, triesLeft).then(async (article) => {
+                await fetchRetry(ssUrl, delay, triesLeft, fetchOptions).then(async (article) => {
                     if (article.status == 200) {
                         let data = await article.json();
                         var title = data.title;
@@ -810,7 +844,7 @@ export default {
                         var children = [];
                         if (journalOrder != "Hide") {
                             var journalName, journalVol, journalPage, pages;
-                            if (data.journal.hasOwnProperty("name")) {
+                            if (data.journal != null && data.journal.hasOwnProperty("name")) {
                                 journalName = data.journal.name;
                                 if (data.journal.hasOwnProperty("volume")) {
                                     journalVol = data.journal.volume;
@@ -839,7 +873,6 @@ export default {
                                 if (pages != undefined) {
                                     journalString += ":" + pages + "";
                                 }
-                                console.info(isOpenAccess, openAccessPdf);
                                 if (isOpenAccess) {
                                     if (data.externalIds.hasOwnProperty("DOI")) {
                                         journalString += "  ![[](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png)[🔗](https://doi.org/" + data.externalIds.DOI + ") #semSchol";
@@ -1107,6 +1140,7 @@ export default {
                         if (corpId != undefined) {
                             if (corpId != newCorpId) { // same page name but different corpus ID = new article
                                 newPageName = newPageName + " ~ " + newCorpId;
+                                newPageUid = roamAlphaAPI.util.generateUID();
                                 await window.roamAlphaAPI.createPage({ page: { title: newPageName, uid: newPageUid } });
                                 await window.roamAlphaAPI.updateBlock(
                                     { block: { uid: parentUid, string: "[[" + newPageName + "]]".toString(), open: true } });
@@ -1173,7 +1207,6 @@ export default {
             }
         }
 
-        // TODO: implement fetch/retry and parentUid feedback to user, like article metadata import
         async function fetchSSAutM(sb, authorId, parentUid) {
             var searchQuery, finalSearchQuery, authorIdString;
             var blocks = [];
@@ -1212,69 +1245,97 @@ export default {
                     ssUrl += ",papers,papers.paperId,papers.corpusId,papers.url,papers.title,papers.venue,papers.publicationVenue,papers.year,papers.authors,papers.externalIds,papers.abstract,papers.referenceCount,papers.citationCount,papers.influentialCitationCount,papers.isOpenAccess,papers.openAccessPdf,papers.fieldsOfStudy,papers.s2FieldsOfStudy,papers.publicationTypes,papers.publicationDate,papers.journal,papers.citationStyles"
                 }
 
-                await fetch(ssUrl)
-                    .then(async (author) => {
-                        if (author.status == 200) {
-                            let data = await author.json();
-                            var name = data.name.toString();
-                            var url = data.url;
+                var myHeaders = new Headers();
+                var fetchOptions = {};
+                if (apiKey != undefined && apiKey != null) {
+                    myHeaders.append("x-api-key", apiKey);
+                    fetchOptions = {
+                        method: 'GET',
+                        headers: myHeaders,
+                    };
+                }
 
-                            var children = [];
-                            if (affiliationsOrder != "Hide") {
-                                var affiliations = data.affiliations;
-                                if (affiliations.length > 0) {
-                                    var affiliationsString = "**Affiliations:** ";
-                                    for (var i = 0; i < affiliations.length; i++) {
-                                        affiliationsString += "[[" + affiliations[i] + "]] ";
-                                    };
-                                    children[affiliationsOrder - 1] = { "text": affiliationsString, };
+                async function fetchRetry(url, delay, tries, fetchOptions) {
+                    await window.roamAlphaAPI.updateBlock(
+                        { block: { uid: parentUid, string: "Contacting Semantic Scholar", open: true } });
+                    async function onError(err) {
+                        triesLeft = tries - 1;
+                        if (!triesLeft) {
+                            await window.roamAlphaAPI.updateBlock(
+                                { block: { uid: parentUid, string: "Multiple calls to Semantic Scholar failed. Perhaps you have made too many calls in a short time? Maybe try waiting before trying again.", open: true } });
+                        } else {
+                            await window.roamAlphaAPI.updateBlock(
+                                { block: { uid: parentUid, string: "Call to Semantic Scholar API failed. Trying again soon...", open: true } });
+                        }
+                        return sleep(delay).then(() => fetchRetry(url, delay, triesLeft, fetchOptions));
+                    }
+                    return fetch(url, fetchOptions).catch(onError);
+                }
+
+                var triesLeft = 10;
+                var delay = 10000;
+                await fetchRetry(ssUrl, delay, triesLeft, fetchOptions).then(async (author) => {
+                    if (author.status == 200) {
+                        let data = await author.json();
+                        var name = data.name.toString();
+                        var url = data.url;
+
+                        var children = [];
+                        if (affiliationsOrder != "Hide") {
+                            var affiliations = data.affiliations;
+                            if (affiliations.length > 0) {
+                                var affiliationsString = "**Affiliations:** ";
+                                for (var i = 0; i < affiliations.length; i++) {
+                                    affiliationsString += "[[" + affiliations[i] + "]] ";
+                                };
+                                children[affiliationsOrder - 1] = { "text": affiliationsString, };
+                            }
+                        }
+                        if (authorsLinksOrder != "Hide") {
+                            var externalIds = data.externalIds;
+                            var externalIdsString = "[Semantic Scholar](" + url + ")";
+                            if (externalIds.hasOwnProperty("DBLP")) {
+                                for (var i = 0; i < externalIds.DBLP.length; i++) {
+                                    var string = encodeURIComponent(externalIds.DBLP[i]);
+                                    externalIdsString += " ~ [" + externalIds.DBLP[i] + "](https://dblp.org/search/author?q=" + string + ")";
                                 }
                             }
-                            if (authorsLinksOrder != "Hide") {
-                                var externalIds = data.externalIds;
-                                var externalIdsString = "[Semantic Scholar](" + url + ")";
-                                if (externalIds.hasOwnProperty("DBLP")) {
-                                    for (var i = 0; i < externalIds.DBLP.length; i++) {
-                                        var string = encodeURIComponent(externalIds.DBLP[i]);
-                                        externalIdsString += " ~ [" + externalIds.DBLP[i] + "](https://dblp.org/search/author?q=" + string + ")";
-                                    }
-                                }
-                                if (externalIds.hasOwnProperty("ORCID")) {
-                                    externalIdsString += " ~ [ORCID](https://orcid.org/" + externalIds.ORCID[0] + ")";
-                                }
-                                children[authorsLinksOrder - 1] = { "text": externalIdsString, };
+                            if (externalIds.hasOwnProperty("ORCID")) {
+                                externalIdsString += " ~ [ORCID](https://orcid.org/" + externalIds.ORCID[0] + ")";
                             }
-                            if (homepageOrder != "Hide") {
-                                var homepage;
-                                if (data.homepage != null) {
-                                    homepage = data.homepage;
-                                    var homepageString = "**Home Page:** ";
-                                    homepageString += "![](" + homepage + ") ";
-                                    children[homepageOrder - 1] = { "text": homepageString, };
-                                }
+                            children[authorsLinksOrder - 1] = { "text": externalIdsString, };
+                        }
+                        if (homepageOrder != "Hide") {
+                            var homepage;
+                            if (data.homepage != null) {
+                                homepage = data.homepage;
+                                var homepageString = "**Home Page:** ";
+                                homepageString += "![](" + homepage + ") ";
+                                children[homepageOrder - 1] = { "text": homepageString, };
                             }
-                            if (citationCountOrder != "Hide") {
-                                var citationCount = data.citationCount;
-                                var citationCountString = "**Citation Count:** " + citationCount + "";
-                                children[citationCountOrder - 1] = { "text": citationCountString, };
-                            }
-                            if (hIndexOrder != "Hide") {
-                                var hIndex = data.hIndex;
-                                var hIndexString = "**h-Index:** " + hIndex + "";
-                                children[hIndexOrder - 1] = { "text": hIndexString, };
-                            }
-                            if (papersOrder != "Hide" && data.papers.length > 0) {
-                                var papersCount = data.papers.length;
-                                var papers = data.papers;
-                                var papersBlock = [];
-                                for (var i = 0; i < papers.length; i++) {
-                                    var paperTitle = "";
-                                    var matchingArticlePages = await window.roamAlphaAPI.q(`
+                        }
+                        if (citationCountOrder != "Hide") {
+                            var citationCount = data.citationCount;
+                            var citationCountString = "**Citation Count:** " + citationCount + "";
+                            children[citationCountOrder - 1] = { "text": citationCountString, };
+                        }
+                        if (hIndexOrder != "Hide") {
+                            var hIndex = data.hIndex;
+                            var hIndexString = "**h-Index:** " + hIndex + "";
+                            children[hIndexOrder - 1] = { "text": hIndexString, };
+                        }
+                        if (papersOrder != "Hide" && data.papers.length > 0) {
+                            var papersCount = data.papers.length;
+                            var papers = data.papers;
+                            var papersBlock = [];
+                            for (var i = 0; i < papers.length; i++) {
+                                var paperTitle = "";
+                                var matchingArticlePages = await window.roamAlphaAPI.q(`
                                         [:find ?e
                                             :where [?e :block/string "**Corpus ID:** ${papers[i].corpusId}"]]`);
-                                    if (matchingArticlePages != null && matchingArticlePages.length > 0) {
-                                        // there's a matching author page
-                                        var matchingArticlePageName = await window.roamAlphaAPI.q(`[:find
+                                if (matchingArticlePages != null && matchingArticlePages.length > 0) {
+                                    // there's a matching author page
+                                    var matchingArticlePageName = await window.roamAlphaAPI.q(`[:find
                                             (pull ?node [:block/string :node/title :block/uid])
                                             (pull ?node [:block/uid])
                                             :where
@@ -1286,37 +1347,34 @@ export default {
                                             )
                                             [(clojure.string/includes? ?text-String "**Corpus ID:** ${papers[i].corpusId}")]
                                             ]`);
-                                        for (var j = 0; j < matchingArticlePageName[0].length; j++) {
-                                            if (matchingArticlePageName[0][j].hasOwnProperty("title")) {
-                                                matchingArticlePageName = matchingArticlePageName[0][j]["title"].toString();
-                                            }
-                                        }
-                                        paperTitle = "[[" + matchingArticlePageName + "]]";
-                                    } else {
-                                        paperTitle = papers[i].title;
-                                        if (papers[i].isOpenAccess) {
-                                            paperTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png) #semSchol";
-                                        }
-                                        if (window.roamjs?.extension?.smartblocks) {
-                                            paperTitle += "  {{Import:SmartBlock:SemanticScholarArticle:corpusId=" + papers[i].corpusId + "}}";
+                                    for (var j = 0; j < matchingArticlePageName[0].length; j++) {
+                                        if (matchingArticlePageName[0][j].hasOwnProperty("title")) {
+                                            matchingArticlePageName = matchingArticlePageName[0][j]["title"].toString();
                                         }
                                     }
-                                    papersBlock.push({ "text": paperTitle });
+                                    paperTitle = "[[" + matchingArticlePageName + "]]";
+                                } else {
+                                    paperTitle = papers[i].title;
+                                    if (papers[i].isOpenAccess) {
+                                        paperTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png) #semSchol";
+                                    }
+                                    if (window.roamjs?.extension?.smartblocks) {
+                                        paperTitle += "  {{Import:SmartBlock:SemanticScholarArticle:corpusId=" + papers[i].corpusId + "}}";
+                                    }
                                 }
-                                children[papersOrder - 1] = { "text": "**Papers:** (" + papersCount + ")", "children": papersBlock, };
+                                papersBlock.push({ "text": paperTitle });
                             }
-                            authorIdString = "**Author ID:** " + data.authorId;
-                            children.splice(99, 0, { "text": "**Author ID:** " + data.authorId, });
-
-                            // finally, create the blocks object and send for block creation
-                            blocks.push({ "text": "**" + name + "**" + data.authorId, "children": children });
-                        } else if (author.status == 404) {
-                            blocks.push({ "text": "Author not found" });
+                            children[papersOrder - 1] = { "text": "**Papers:** (" + papersCount + ")", "children": papersBlock, };
                         }
-                    })
-                /*.catch(error => {
-                    blocks.push({ "text": "Too many requests" });
-                });*/
+                        authorIdString = "**Author ID:** " + data.authorId;
+                        children.splice(99, 0, { "text": "**Author ID:** " + data.authorId, });
+
+                        // finally, create the blocks object and send for block creation
+                        blocks.push({ "text": "**" + name + "**" + data.authorId, "children": children });
+                    } else if (author.status == 404) {
+                        blocks.push({ "text": "Author not found" });
+                    }
+                })
             }
 
             var page, newPageName, newPageUid, string, newAuthId;
@@ -1435,8 +1493,7 @@ export default {
                 return '';
             }
         }
-
-        // TODO: implement fetch/retry and parentUid feedback to user, like article metadata import
+        
         async function searchSSRecommended(sb, parentUid, searchParams, refresh) {
             var finalSearchQuery;
             var blocks = [];
@@ -1457,23 +1514,51 @@ export default {
                 ssUrl += "&limit=" + recRelNumber;
 
                 var recBlocks = [];
-                await fetch(ssUrl)
-                    .then(async (articles) => {
-                        if (articles.status == 200) {
-                            let data = await articles.json();
-                            var recommendations = data.recommendedPapers;
-                            var limit = recRelNumber;
-                            if (recommendations.length < recRelNumber) {
-                                limit = recommendations.length;
-                            }
-                            for (var i = 0; i < limit; i++) {
-                                var recTitle = "";
-                                var matchingArticlePages = await window.roamAlphaAPI.q(`
+                var myHeaders = new Headers();
+                var fetchOptions = {};
+                if (apiKey != undefined && apiKey != null) {
+                    myHeaders.append("x-api-key", apiKey);
+                    fetchOptions = {
+                        method: 'GET',
+                        headers: myHeaders,
+                    };
+                }
+
+                async function fetchRetry(url, delay, tries, fetchOptions) {
+                    await window.roamAlphaAPI.updateBlock(
+                        { block: { uid: parentUid, string: "Contacting Semantic Scholar", open: true } });
+                    async function onError(err) {
+                        triesLeft = tries - 1;
+                        if (!triesLeft) {
+                            await window.roamAlphaAPI.updateBlock(
+                                { block: { uid: parentUid, string: "Multiple calls to Semantic Scholar failed. Perhaps you have made too many calls in a short time? Maybe try waiting before trying again.", open: true } });
+                        } else {
+                            await window.roamAlphaAPI.updateBlock(
+                                { block: { uid: parentUid, string: "Call to Semantic Scholar API failed. Trying again soon...", open: true } });
+                        }
+                        return sleep(delay).then(() => fetchRetry(url, delay, triesLeft, fetchOptions));
+                    }
+                    return fetch(url, fetchOptions).catch(onError);
+                }
+
+                var triesLeft = 10;
+                var delay = 10000;
+                await fetchRetry(ssUrl, delay, triesLeft, fetchOptions).then(async (articles) => {
+                    if (articles.status == 200) {
+                        let data = await articles.json();
+                        var recommendations = data.recommendedPapers;
+                        var limit = recRelNumber;
+                        if (recommendations.length < recRelNumber) {
+                            limit = recommendations.length;
+                        }
+                        for (var i = 0; i < limit; i++) {
+                            var recTitle = "";
+                            var matchingArticlePages = await window.roamAlphaAPI.q(`
                                     [:find ?e
                                         :where [?e :block/string "**Corpus ID:** ${recommendations[i].corpusId}"]]`);
-                                if (matchingArticlePages != null && matchingArticlePages.length > 0) {
-                                    // there's a matching author page
-                                    var matchingArticlePageName = await window.roamAlphaAPI.q(`[:find
+                            if (matchingArticlePages != null && matchingArticlePages.length > 0) {
+                                // there's a matching author page
+                                var matchingArticlePageName = await window.roamAlphaAPI.q(`[:find
                                         (pull ?node [:block/string :node/title :block/uid])
                                         (pull ?node [:block/uid])
                                         :where
@@ -1485,36 +1570,36 @@ export default {
                                         )
                                         [(clojure.string/includes? ?text-String "**Corpus ID:** ${recommendations[i].corpusId}")]
                                         ]`);
-                                    for (var j = 0; j < matchingArticlePageName[0].length; j++) {
-                                        if (matchingArticlePageName[0][j].hasOwnProperty("title")) {
-                                            matchingArticlePageName = matchingArticlePageName[0][j]["title"].toString();
-                                        }
-                                    }
-                                    recTitle = "[[" + matchingArticlePageName + "]]";
-                                } else {
-                                    recTitle = recommendations[i].title;
-                                    if (recommendations[i].isOpenAccess) {
-                                        recTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png) #semSchol";
-                                    }
-                                    if (window.roamjs?.extension?.smartblocks) {
-                                        recTitle += "  {{Import:SmartBlock:SemanticScholarArticle:corpusId=" + recommendations[i].corpusId + "}}";
+                                for (var j = 0; j < matchingArticlePageName[0].length; j++) {
+                                    if (matchingArticlePageName[0][j].hasOwnProperty("title")) {
+                                        matchingArticlePageName = matchingArticlePageName[0][j]["title"].toString();
                                     }
                                 }
-                                recBlocks.push({ "text": recTitle });
-                            }
-                            if (sb) {
-                                blocks.push({ "text": "button press", "children": recBlocks });
+                                recTitle = "[[" + matchingArticlePageName + "]]";
                             } else {
-                                var blockHeader = "**Recommended Papers for Article with PaperId:** " + finalSearchQuery + "";
-                                if (window.roamjs?.extension?.smartblocks) {
-                                    blockHeader += "  {{Refresh:SmartBlock:RefreshSemanticScholarRecommendations:searchParams=" + finalSearchQuery + "}}";
+                                recTitle = recommendations[i].title;
+                                if (recommendations[i].isOpenAccess) {
+                                    recTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png) #semSchol";
                                 }
-                                blocks.push({ "text": blockHeader, "children": recBlocks });
+                                if (window.roamjs?.extension?.smartblocks) {
+                                    recTitle += "  {{Import:SmartBlock:SemanticScholarArticle:corpusId=" + recommendations[i].corpusId + "}}";
+                                }
                             }
-                        } else if (articles.status == 404) {
-                            blocks.push({ "text": "Article not found" });
+                            recBlocks.push({ "text": recTitle });
                         }
-                    });
+                        if (sb) {
+                            blocks.push({ "text": "button press", "children": recBlocks });
+                        } else {
+                            var blockHeader = "**Recommended Papers for Article with PaperId:** " + finalSearchQuery + "";
+                            if (window.roamjs?.extension?.smartblocks) {
+                                blockHeader += "  {{Refresh:SmartBlock:RefreshSemanticScholarRecommendations:searchParams=" + finalSearchQuery + "}}";
+                            }
+                            blocks.push({ "text": blockHeader, "children": recBlocks });
+                        }
+                    } else if (articles.status == 404) {
+                        blocks.push({ "text": "Article not found" });
+                    }
+                });
             }
 
             var newPageName, string;
@@ -1567,7 +1652,7 @@ export default {
                 return '';
             }
         }
-        // TODO: put more information in each output line like author search, to enable choosing
+        
         async function searchSSArtRelevance(sb, parentUid, searchParams, more) {
             var searchQuery, finalSearchQuery, yearsSearch, openAccessSearch, openAccessPDFSearch, offset, minCitationCount, venue;
             var blocks = [];
@@ -1681,9 +1766,19 @@ export default {
                 if (ssUrl.charAt(ssUrl.length - 1) === ',') {
                     ssUrl = ssUrl.slice(0, -1);
                 }
-                ssUrl += ",corpusId,title,year";
+                ssUrl += ",corpusId,title,year,citationCount";
 
-                async function fetchRetry(url, delay, tries, fetchOptions = {}) {
+                var myHeaders = new Headers();
+                var fetchOptions = {};
+                if (apiKey != undefined && apiKey != null) {
+                    myHeaders.append("x-api-key", apiKey);
+                    fetchOptions = {
+                        method: 'GET',
+                        headers: myHeaders,
+                    };
+                }
+
+                async function fetchRetry(url, delay, tries, fetchOptions) {
                     await window.roamAlphaAPI.updateBlock(
                         { block: { uid: parentUid, string: "Contacting Semantic Scholar", open: true } });
                     async function onError(err) {
@@ -1703,7 +1798,7 @@ export default {
                 var triesLeft = 10;
                 var delay = 10000;
                 var recBlocks = [];
-                await fetchRetry(ssUrl, delay, triesLeft).then(async (article) => {
+                await fetchRetry(ssUrl, delay, triesLeft, fetchOptions).then(async (article) => {
                     if (article.status == 200) {
                         let list = await article.json();
                         var blockHeader = "";
@@ -1711,6 +1806,7 @@ export default {
 
                         if (list.total != 0) {
                             var recommendations = list.data;
+                            console.info(recommendations);
                             var limit = recRelNumber;
                             if (list.total < recRelNumber) {
                                 limit = list.total;
@@ -1742,6 +1838,22 @@ export default {
                                     recTitle = "[[" + matchingArticlePageName + "]]";
                                 } else {
                                     recTitle = recommendations[i].title;
+                                    recTitle += ", "+recommendations[i].year;
+                                    if (recommendations[i].journal != null) {
+                                        if (recommendations[i].journal.hasOwnProperty("name")) {
+                                            recTitle += ", " + recommendations[i].journal.name + "";
+                                        }
+                                    }
+                                    if (recommendations[i].citationCount == 1) {
+                                        recTitle += ", " + recommendations[i].citationCount + " citation";
+                                    } else {
+                                        recTitle += ", " + recommendations[i].citationCount + " citations";
+                                    } 
+                                    if (recommendations[i].influentialCitationCount == 1) {
+                                        recTitle += ", " + recommendations[i].influentialCitationCount + " influential citation";
+                                    } else {
+                                        recTitle += ", " + recommendations[i].influentialCitationCount + " influential citations";
+                                    }
                                     if (recommendations[i].isOpenAccess) {
                                         recTitle += "  ![](https://raw.githubusercontent.com/mlava/semantic-scholar/main/openAccess.png) #semSchol";
                                     }
@@ -1799,9 +1911,8 @@ export default {
                 });
             }
 
-            var page, newPageName, newPageName1, newPageUid, string, newCorpId;
+            var newPageName, string;
             newPageName = blocks[0].text.toString();
-            newPageName1 = newPageName;
 
             if (newPageName == "Search cancelled") {
                 string = "You cancelled the search";
@@ -1925,7 +2036,16 @@ export default {
                 }
                 ssUrl += ",corpusId,title,year";
 
-                async function fetchRetry(url, delay, tries, fetchOptions = {}) {
+                var myHeaders = new Headers();
+                var fetchOptions = {};
+                if (apiKey != undefined && apiKey != null) {
+                    myHeaders.append("x-api-key", apiKey);
+                    fetchOptions = {
+                        method: 'GET',
+                        headers: myHeaders,
+                    };
+                }
+                async function fetchRetry(url, delay, tries, fetchOptions) {
                     await window.roamAlphaAPI.updateBlock(
                         { block: { uid: parentUid, string: "Contacting Semantic Scholar", open: true } });
                     async function onError(err) {
@@ -1945,7 +2065,7 @@ export default {
                 var triesLeft = 10;
                 var delay = 10000;
                 var recBlocks = [];
-                await fetchRetry(ssUrl, delay, triesLeft).then(async (article) => {
+                await fetchRetry(ssUrl, delay, triesLeft, fetchOptions).then(async (article) => {
                     if (article.status == 200) {
                         let list = await article.json();
                         var blockHeader = "";
@@ -2109,7 +2229,16 @@ export default {
                 }
                 ssUrl += ",name,paperCount";
 
-                async function fetchRetry(url, delay, tries, fetchOptions = {}) {
+                var myHeaders = new Headers();
+                var fetchOptions = {};
+                if (apiKey != undefined && apiKey != null) {
+                    myHeaders.append("x-api-key", apiKey);
+                    fetchOptions = {
+                        method: 'GET',
+                        headers: myHeaders,
+                    };
+                }
+                async function fetchRetry(url, delay, tries, fetchOptions) {
                     await window.roamAlphaAPI.updateBlock(
                         { block: { uid: parentUid, string: "Contacting Semantic Scholar", open: true } });
                     async function onError(err) {
@@ -2129,7 +2258,7 @@ export default {
                 var triesLeft = 10;
                 var delay = 10000;
                 var recBlocks = [];
-                await fetchRetry(ssUrl, delay, triesLeft).then(async (author) => {
+                await fetchRetry(ssUrl, delay, triesLeft, fetchOptions).then(async (author) => {
                     if (author.status == 200) {
                         let list = await author.json();
                         var blockHeader = "";
