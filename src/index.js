@@ -2531,7 +2531,7 @@ async function prompt(string, selectString, type, duration) {
         iziToast.show({
             theme: 'dark',
             message: string,
-            class: 'semantic-scholar',
+            class: 'semantic-scholar-info',
             position: 'center',
             close: false,
             timeout: duration,
