@@ -12,6 +12,8 @@ There are a number of ways to access the data:
 
 All six options can have Roam Research hotkeys enabled to make searching for new data as quick as a keystroke!
 
+You can access these options via the Command Palette or by setting Hotkeys in Roam Research Settings/Hotkeys.
+
 **Notes:**
 - Please note that Semantic Scholar offers an API key by application, however this extension DOES NOT need an API key to work. Without an API key, Semantic Scholar limits calls to their API, and you might receive an error message that you are trying to import data too often. I have implemented a retry mechanism that will attempt up to ten times at ten second intervals, and will provide feedback about what is happening.
 - You can apply for an API key at https://www.semanticscholar.org/product/api#api-key. If you are approved, you can enter the token in the Roam Depot settings for this extension, under the 'Set Here' or 'Home' tab.
