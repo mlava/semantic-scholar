@@ -85,3 +85,19 @@ You can set your preferred Fields of Study in the Roam Depot settings for this e
 The best features are enabled if you also have the SmartBlocks extension installed. When you install this extension, a new page will be created in your graph entitled 'Semantic Scholar Configuration'. This has all of the required SmartBlocks so that you won't need to create anything yourself.
 
 When you import any data from Semantic Scholar, a SmartBlock button will be placed after all article titles, author names, and search results. You can click that SmartBlock button to import the data for that item to your graph as well. For lists of Recommended or Relevant Article searches, or Author Name searches, you will be presented with both Refresh and Import More SmartBlock buttons. If you import 5 authors, for example, the Import More button will import another five authors. Refresh will update the data if there has been new publications become available.
+
+### Programmatic Access (Extension Tools API)
+
+This extension registers tools on `window.RoamExtensionTools["semantic-scholar"]` for programmatic use by other extensions or agents. The following tools are available:
+
+| Tool | Description |
+|------|-------------|
+| `ss_search_papers` | Search papers by relevance query |
+| `ss_get_paper` | Get paper metadata by identifier (CorpusId, DOI, arXiv, etc.) |
+| `ss_search_authors` | Search authors by name |
+| `ss_get_author` | Get author metadata by ID |
+| `ss_get_recommendations` | Get recommended papers for a given paper |
+| `ss_import_paper` | Import a paper into the Roam graph |
+| `ss_import_author` | Import an author into the Roam graph |
+
+Read-only tools return structured JSON. Import tools create pages in your graph and will skip papers/authors that have already been imported.
